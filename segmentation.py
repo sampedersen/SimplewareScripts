@@ -30,6 +30,14 @@ import scanip_api3 as sip
 def message_box(msg):
     """
 
-    :param msg:
-    :return:
+    Function to display a message within a pop-up dialogue box.
+
+    Args:
+        msg (str): Message to be displayed
+
+    Returns:
+        None
+
     """
+    # Display dialogue box and message
+    sip.App.GetInstance().ShowMessage(msg)
