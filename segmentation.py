@@ -3,7 +3,7 @@ segmentation.py
 
 Module for implementing segmentation-related functions
 
-This module contains functions for displaying a message within a dialogue box,
+This module contains functions for displaying a message within a dialogue box, verifies module importing to user,
 
 Author: Sam Pedersen
 Date: 23 July 2023
@@ -41,4 +41,18 @@ def message_box(msg):
     """
     # Display dialogue box and message
     sip.App.GetInstance().ShowMessage(msg)
+
+def verify_import():
+    """
+
+    Verifies to user that segmentation.py module was successfully imported to Simpleware environment
+
+    Args:
+        None
+
+    Return:
+        None
+
+    """
+    sip.App.GetInstance().ShowMessage("QCFunctions module imported successfully.")
 
