@@ -46,6 +46,7 @@ def message_box(msg):
     sip.App.GetInstance().ShowMessage(msg)
 
 
+# Function to verify module has been imported successfully
 def verify_import():
 
     """
@@ -63,6 +64,7 @@ def verify_import():
     sip.App.GetInstance().ShowMessage("QCFunctions module imported successfully.")
 
 
+# Function to standardize colors of tissue masks
 def colors_visibility(mask):
 
     """
@@ -100,6 +102,7 @@ def colors_visibility(mask):
     sip.App.GetDocument().GetActiveGenericMask().SetVisible(True)
 
 
+# Function to remove overlap between tissue masks
 def separate_masks():
 
     """
@@ -159,6 +162,7 @@ def separate_masks():
     doc.ReplaceMaskUsingBooleanExpression("(csf MINUS eyes)", doc.GetMaskByName("csf"), sliceIndices, sliceOrientation)
 
 
+# Function to generate the initial skin tissue mask
 def segment_skin(lowerBuffer):
 
     """
