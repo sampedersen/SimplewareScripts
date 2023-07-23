@@ -3,7 +3,7 @@ segmentation.py
 
 Module for implementing segmentation-related functions
 
-This module contains functions for
+This module contains functions for displaying a message within a dialogue box,
 
 Author: Sam Pedersen
 Date: 23 July 2023
@@ -41,3 +41,4 @@ def message_box(msg):
     """
     # Display dialogue box and message
     sip.App.GetInstance().ShowMessage(msg)
+
