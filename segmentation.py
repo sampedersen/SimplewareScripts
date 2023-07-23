@@ -4,7 +4,7 @@ segmentation.py
 Module for implementing segmentation-related functions
 
 This module contains functions for displaying a message within a dialogue box, verifies module importing to user,
-standardized tissue mask colors, remove tissue overlap
+standardized tissue mask colors, remove tissue overlap, generate initial skin tissue mask,
 
 Author: Sam Pedersen
 Date: 23 July 2023
@@ -159,5 +159,145 @@ def separate_masks():
     doc.ReplaceMaskUsingBooleanExpression("(csf MINUS eyes)", doc.GetMaskByName("csf"), sliceIndices, sliceOrientation)
 
 
+def segment_skin(lowerBuffer):
 
+    """
+
+    Creates initial skin tissue mask.
+
+    Args:
+        lowerBuffer (int): Number of slices, from the bottom, that the T1 scan is interrupted/orthogonally cropped
+
+    Return:
+         None
+
+    """
+
+    # Establish buffers
+    listOfBufferSlices = [i for i in range(1,lowerBuffer+1)]
+    listOfRemovedSlices =  [i for i in range(lowerBuffer+1,257)]
+    listOfExtraSlices = [i for i in range(3,257)]
+
+    # Generate initial skin mask
+    sip.App.GetDocument().GetGenericMaskByName("uniform").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").SetName("skin")
+    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 2, 2, 2, 0)
+    sip.App.GetDocument().GetGenericMaskByName("skin").Activate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(NOT skin)", sip.App.GetDocument().GetMaskByName("skin"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+    sip.App.GetDocument().GetGenericMaskByName("skin").Activate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(skin AND uniform)", sip.App.GetDocument().GetMaskByName("skin"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(128, 128, 1)], sip.Mask.Disk, 300, True, [0, 1, 2],
+                                                  sip.Doc.OrientationXY, True)
+
+    # Generate bottom 2 slices of skin mask
+    sip.App.GetDocument().CreateMask("bottom", sip.Colour(255, 0, 191))
+    sip.App.GetDocument().GetGenericMaskByName("bottom").Activate()
+    sip.App.GetDocument().GetActiveMask().Paint([sip.Point3D(128, 128, 1)], sip.Mask.Disk, 300, True, [0, 1, 2],
+                                                sip.Doc.OrientationXY, True)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(bottom AND uniform)",
+                                                            sip.App.GetDocument().GetMaskByName("bottom"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("bottom").Activate()
+    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 2, 2, 0, 0)
+    sip.App.GetDocument().GetGenericMaskByName("bottom").Activate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(NOT bottom)", sip.App.GetDocument().GetMaskByName("bottom"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(bottom AND uniform)",
+                                                        sip.App.GetDocument().GetMaskByName("bottom"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(115, 129, 3)], sip.Mask.Disk, 300, True, listOfExtraSlices,
+                                                  sip.Doc.OrientationXY, True)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(skin OR bottom)",
+                                                        sip.App.GetDocument().GetMaskByName("skin"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+
+    # Generate eyelids
+    sip.App.GetDocument().GetGenericMaskByName("eyes").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of eyes").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of eyes").SetName("eyelids")
+    sip.App.GetDocument().ApplyDilateFilter(sip.Doc.TargetMask, 2, 2, 2, 0)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(eyelids MINUS \"eyes interior\")",
+                                                            sip.App.GetDocument().GetMaskByName("eyelids"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(eyelids MINUS eyes)",
+                                                            sip.App.GetDocument().GetMaskByName("eyelids"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("uniform").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").Activate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(NOT \"Copy of uniform\")",
+                                                            sip.App.GetDocument().GetMaskByName("Copy of uniform"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY), sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").SetName("negative_space")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("((negative_space AND (eyelids MINUS skin)) OR (eyelids AND (skin MINUS negative_space)))",
+                                                            sip.App.GetDocument().GetMaskByName("eyelids"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("skin").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of skin").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of skin").SetName("skin_eyelids")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(skin_eyelids MINUS eyes)",
+                                                            sip.App.GetDocument().GetMaskByName("skin_eyelids"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(skin_eyelids MINUS \"eyes interior\")",
+                                                            sip.App.GetDocument().GetMaskByName("skin_eyelids"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(skin_eyelids OR eyelids)",
+                                                            sip.App.GetDocument().GetMaskByName("skin_eyelids"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+
+    # Generate "bottom_corrections" mask
+    sip.App.GetDocument().GetGenericMaskByName("uniform").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").SetName("bottom_corrections")
+    sip.App.GetDocument().GetGenericMaskByName("bottom_corrections").Activate()
+    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 2, 2, 0, 0)
+    sip.App.GetDocument().GetGenericMaskByName("bottom_corrections").Activate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(NOT bottom_corrections)",
+                                                            sip.App.GetDocument().GetMaskByName("bottom_corrections"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(bottom_corrections AND uniform)",
+                                                            sip.App.GetDocument().GetMaskByName("bottom_corrections"),
+                                                            listOfBufferSlices, sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("bottom_corrections").Activate()
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(128, 128, lowerBuffer + 1)], sip.Mask.Disk, 300, True,
+                                                  listOfRemovedSlices, sip.Doc.OrientationXY, True)
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(225, 25, lowerBuffer + 1)], sip.Mask.Disk, 300, True,
+                                                  listOfRemovedSlices, sip.Doc.OrientationXY, True)
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(25, 25, lowerBuffer + 1)], sip.Mask.Disk, 300, True,
+                                                  listOfRemovedSlices, sip.Doc.OrientationXY, True)
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(25, 225, lowerBuffer + 1)], sip.Mask.Disk, 300, True,
+                                                  listOfRemovedSlices, sip.Doc.OrientationXY, True)
+    sip.App.GetDocument().GetActiveMask().Unpaint([sip.Point3D(225, 225, lowerBuffer + 1)], sip.Mask.Disk, 300, True,
+                                                  listOfRemovedSlices, sip.Doc.OrientationXY, True)
+
+    # Re-organize Project Files
+    sip.App.GetDocument().RemoveMasks([
+        sip.App.GetDocument().GetGenericMaskByName("negative_space"),
+        sip.App.GetDocument().GetGenericMaskByName("skin"),
+        sip.App.GetDocument().GetGenericMaskByName("eyelids"),
+        sip.App.GetDocument().GetGenericMaskByName("bottom")
+    ])
+    sip.App.GetDocument().GetGenericMaskByName("skin_eyelids").SetName("skin")
+    sip.App.GetDocument().IsolateMasks([sip.App.GetDocument().GetGenericMaskByName("skin"),
+                                        sip.App.GetDocument().GetGenericMaskByName("bottom_corrections")])
 
