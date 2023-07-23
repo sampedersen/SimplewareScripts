@@ -4,7 +4,8 @@ segmentation.py
 Module for implementing segmentation-related functions
 
 This module contains functions for displaying a message within a dialogue box, verifies module importing to user,
-standardized tissue mask colors, remove tissue overlap, generate initial skin tissue mask,
+standardized tissue mask colors, remove tissue overlap, generate initial skin tissue mask, (re)generate CSF and 10
+masks,
 
 Author: Sam Pedersen
 Date: 23 July 2023
@@ -304,4 +305,63 @@ def segment_skin(lowerBuffer):
     sip.App.GetDocument().GetGenericMaskByName("skin_eyelids").SetName("skin")
     sip.App.GetDocument().IsolateMasks([sip.App.GetDocument().GetGenericMaskByName("skin"),
                                         sip.App.GetDocument().GetGenericMaskByName("bottom_corrections")])
+
+
+# Function to (re)generate the CSF and 10 masks for final segmentation protocols
+def generate_csf_10(firstGen):
+    """
+
+    Function will either generate or regenerate the CSF mask and the 10 mask used in the process.
+
+    Args:
+        firstGen (bool): Indicates if this is the first time CSF/10 masks are generated, or if the script need to
+        accommodate for regenerating them instead
+
+    Return:
+        None
+
+    """
+
+    # If this is not the first round of generation, delete the pre-existing 10 and CSF files
+    if not firstGen:
+        # Delete pre-existing files
+        sip.App.GetDocument().GetGenericMaskByName("10").Activate()
+        sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetActiveGenericMask())
+        sip.App.GetDocument().GetGenericMaskByName("csf").Activate()
+        sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetActiveGenericMask())
+
+    # Once in a clean slate, generate 10 and CSF
+    # Generate "10" mask
+    sip.App.GetDocument().GetGenericMaskByName("wm").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of wm").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of wm").SetName("10")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression(
+        "(10 OR wm OR gm OR eyes OR air OR blood OR bone OR skin OR fat OR muscle)",
+        sip.App.GetDocument().GetMaskByName("10"), sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+        sip.Doc.OrientationXY)
+
+    # Generate the CSF mask
+    sip.App.GetDocument().GetGenericMaskByName("uniform").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of uniform").SetName("csf")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(csf MINUS 10)",
+                                                            sip.App.GetDocument().GetMaskByName("csf"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+
+    # Add the fluid from the inside of the eyes
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(csf OR \"eyes interior\")",
+                                                            sip.App.GetDocument().GetMaskByName("csf"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+
+    # Adjust color, position, visibility
+    sip.App.GetDocument().GetGenericMaskByName("csf").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().SetColour(sip.Colour(107, 220, 220))
+    sip.App.GetDocument().GetGenericMaskByName("csf").Activate()
+    sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 1)
+    sip.App.GetDocument().GetGenericMaskByName("csf").SetVisible(True)
+    sip.App.GetDocument().GetGenericMaskByName("10").SetVisible(False)
 
