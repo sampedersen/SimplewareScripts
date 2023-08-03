@@ -14,65 +14,16 @@ Date: 2023-07-20
 
 """
 ########################################################################################################################
-
                                                 !!! README !!!
 - This module is intended for use within Synopsys Simpleware ScanIP's scripting environment
 - These functions *cannot* be executed outside Simpleware or within alternative IDEs
 - Simpleware's scripting environment will not re-import modules within the same session; if any edits are made to this
-module, exit Simpleware entirely and begin a new session. Otherwise, Simpleware will continue executing the originally
-imported version of the module
-- If you need to import this module to the Simpleware scripting environment, you must first add the project folder to
-the system path within Simpleware (see instructions below); this must also be repeated anytime the Simpleware session
-is reset
-
-#######################################################################################################################
-
-List of functions:
-    - messageBox()
-    - testImporting()
-    - importFiles()
-
-Function purposes:
-    - messagebox: Displays user message to dialogue window
-    - testImporting: Confirms that QCFunctions module was properly imported by displaying dialogue window
-    - importFiles: Generates participant's quality checking file (if T1 is available) and imports masks, saving sip file
-    to quality check folder
-
-How to import QCFunctions to Simpleware's scripting environment:
-    - Copy and past the following lines to the scripting environment and execute the code
-    - Replace <FULL:\\PATH\\T0\\PROJECT\\FILE\\> with the actual file path
-    - Project file path must be re-added to the path anytime the Simpleware session is restarted
-        - Make sure the file path is contained in quotations
-        - Make sure backslashes (\) are doubled (\\; special character)
-        - Make sure there are two backslashes at the end of the path
-
-    - Format:
-            #! python3
-            import scanip_api3 as sip
-            import sys
-
-            module_path = "<FULL:\\PATH\\T0\\PROJECT\\FILE\\>"
-            sys.path.append(module_path)
-
-    - Example:
-            #! python3
-            import scanip_api3 as sip
-            import sys
-
-            module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\quality_checking\\"
-            sys.path.append(module_path)
-"""
-
-"""
-
-messageBox
-    - Argument: msg (string type)
-    - Displays the argument as a pop-up dialogue window in Simpleware. User must select "continue" for function to end.
-    - Example of use: 
-        message = "Hello world!" 
-        QCFunctions.messageBox(message)
-        # Outcome: Dialogue box that displays [Hello world!]
-        
+        module, exit Simpleware entirely and begin a new session. Otherwise, Simpleware will continue executing the 
+        originally imported version of the module
+- Before using this module, it must be added to the path within Simpleware and imported. As a result, it is 
+    recommended to run the other scripts hosted in the quality checking script folder, which are written with importing 
+    settings and necessary functions called appropriately.
+#######################################################################################################################    
 """
 
 def messageBox(msg):
