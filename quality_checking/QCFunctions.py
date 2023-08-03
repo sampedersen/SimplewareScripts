@@ -42,23 +42,19 @@ def message_box(msg):
     # Display a dialogue box with the designated message
     sip.App.GetInstance().ShowMessage(msg)
 
-########################################################################################################################
 
 
-""" 
 
-testImporting
-    - Argument: N/A
-    - Displays pre-set text message within dialogue window in Simpleware to indicate that the QCFunctions module was 
-    imported; user must select "continue" for function to end 
-    - Example of use:
-        QCFunctions.testImporting()
-        # Outcome: Dialogue box that displays [QCFunctions module imported successfully.]
 
-"""
+# Verify that the module has been imported
+def verify_import():
+    """
 
-def testImporting():
-    sip.App.GetInstance().ShowMessage("QCFunctions module imported successfully.")
+    Verifies to the user that the module has been successfully imported to the Simpleware environment.
+
+    """
+    # Displays predetermined message within dialogue box
+    message_box("Quality check module imported successfully.")
 
 
 ########################################################################################################################

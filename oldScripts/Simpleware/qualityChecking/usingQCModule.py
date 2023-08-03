@@ -11,8 +11,8 @@ import QCFunctions as qc
 
 checkModuleImport = True
 
-if checkModuleImport: 
-    qc.testImporting()
+if checkModuleImport:
+    qc.verify_import()
 
 ########################################################################################################################
 
