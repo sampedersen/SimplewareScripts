@@ -26,7 +26,20 @@ Date: 2023-07-20
 #######################################################################################################################    
 """
 
-def messageBox(msg):
+
+
+
+
+# Function to display message box
+def message_box(msg):
+    """
+
+    Function to display a message within a pop-up dialogue box.
+
+    :param msg: (str) Message to be displayed
+
+    """
+    # Display a dialogue box with the designated message
     sip.App.GetInstance().ShowMessage(msg)
 
 ########################################################################################################################
@@ -261,7 +274,7 @@ def importFiles(participantID, folderLocation):
 
     ### If the T1 was not able to be located, display a dialogue box indicating such
     else:
-        messageBox("No RAW T1 scan found.")
+        message_box("No RAW T1 scan found.")
 
 ########################################################################################################################
 
