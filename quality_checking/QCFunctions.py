@@ -1,6 +1,16 @@
-# QCFunctions module
-# Created by Sam Pedersen (07/20/2023)
-# Last updated: 07/21/2023 (SP)
+# Import operating system and Simpleware modules
+import os
+import scanip_api3 as sip
+
+""" 
+quality_check_functions.py 
+
+This module contains the functions used during the segmentation quality checking process. 
+
+Author: Sam Pedersen
+Date: 2023-07-20
+"""
+
 
 """
 ########################################################################################################################
@@ -52,13 +62,6 @@ How to import QCFunctions to Simpleware's scripting environment:
             module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\quality_checking\\"
             sys.path.append(module_path)
 """
-########################################################################################################################
-
-# Import operating system and Simpleware modules
-import os
-import scanip_api3 as sip
-
-########################################################################################################################
 
 """
 
