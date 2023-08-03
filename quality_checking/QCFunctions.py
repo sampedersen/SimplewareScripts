@@ -214,34 +214,22 @@ def remove_overlap():
                                                                 sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
-"""
 
-importFiles
-    - Arguments: participantID (integer type), folderLocation (string type)
-        - participantID should be the participant's 6-digit identifier (ie, 999999 or 103485)
-        - folderLocation should be the directory location that the participant's individual folder is contained within 
-            - This is *not* the path *into* the participant's folder, but the path into the overall container 
-            for all participants
-            - Backslashes (\) must be doubled (\\; special character) 
-            - Example: 
-                - Path into participant's folder: P:\WoodsLab\...\manual_segmentation\FS6.0_sub-100893_ses01
-                - folderLocation will be: P:\\WoodsLab\\...\\manual_segmentation\\ 
-    - Performs the following functions:
-        - Create a new sip file by loading in participant's T1.raw 
-            - If the T1 is not available as FS6.0_sub-999999_ses01_T1_rs.RAW **OR** T1.RAW, the function will display a 
-            dialogue box indicating that the T1 image could not be found 
-            - The function will not perform the following actions until a T1 can be found 
-        - Import tissue masks as background images, threshold into tissue masks
-        - Places masks in correct order with agreeable colors  
-        - Saves sip file to participant's quality check folder 
-    - Example of use:
-        QCFunctions.importFiles(999999,"P:\\segmentationParticipants\\")
-        # Outcome: Generates a new sip file for 999999, importing T1 and tissue masks, saving to 
-        P:\\segmentationParticipants\\999999Folder\\qualityChecks
 
-"""
 
-def importFiles(participantID, folderLocation):
+
+# Generate the initial quality check #1 .sip file
+def generate_base_file(participant_id, folder_location):
+    """
+
+    Creates a new .sip file by loading in the participant's T1.RAW, imports tissue masks, sets the masks' colors and
+    orders, and saves it as a base .sip file within the participant's quality checking folder.
+
+    :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
+    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+
+    """
+
 
     # Establish participant's folder and location
     participantFolder = folderLocation + "FS6.0_sub-" + str(participantID) + "_ses01\\"
