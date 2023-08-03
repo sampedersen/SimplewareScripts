@@ -2,7 +2,7 @@
 import scanip_api3 as sip
 import sys
 
-module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\AI_segmentation_preProcessing\\"
+module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\quality_checking\\"
 sys.path.append(module_path)
 
 import QCFunctions as qc

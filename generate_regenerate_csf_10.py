@@ -26,7 +26,7 @@ import sys
 
 # Add the script module to the path
 ### !!!! VERIFY THIS WITH P-DRIVE FINAL LOCATIONS !!!! ###
-module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\AI_segmentation_preProcessing\\"
+module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\quality_checking\\"
 sys.path.append(module_path)
 
 # Import the custom module for segmentation
