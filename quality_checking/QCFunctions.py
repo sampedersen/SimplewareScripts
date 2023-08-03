@@ -57,20 +57,16 @@ def verify_import():
     message_box("Quality check module imported successfully.")
 
 
-########################################################################################################################
 
 
-"""
 
-colorsOrderVisibility
-    - Arguments: N/A
-    - Assigns the 11 tissues to a set of colors and their respective order of appearance 
-    - Example of use:
-        qc.colorsOrderVisibility()
-        # Outcome: Tissue masks color and order are corrected 
+# Set masks to pre-established colors and order within Simpleware
+def colors_order_visibility():
+    """
 
-"""
-def colorsOrderVisibility():
+        Assigns tissues their respective colors and order of appearance within Simpleware.
+
+        """
 
     # List of mask names
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
@@ -105,8 +101,9 @@ def colorsOrderVisibility():
         "wm": 11
     }
 
+    # For each mask...
     for mask in masks:
-        # Est variables
+        # Establish variables
         name = mask
         color = color_dict[name]
         order = order_dict[name]
@@ -262,7 +259,7 @@ def importFiles(participantID, folderLocation):
 
         ### Colors and order
         # Call the colorsOrderVisibility() function above
-        colorsOrderVisibility()
+        colors_order_visibility()
 
         ### Save file as <999999>_QC1.sip to participant's quality checking folder
         qcSave = participantFolder + "qualityCheck\\sipFiles\\" + str(participantID) + "_QC1.sip"
@@ -303,7 +300,7 @@ def exportFiles(participantID,folderLocation,checkStage):
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
 
     # Standardize colors and order
-    colorsOrderVisibility()
+    colors_order_visibility()
     # Separate masks
     separateMasks()
 
