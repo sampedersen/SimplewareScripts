@@ -133,59 +133,50 @@ def remove_overlap():
     """
 
     # Greymatter minus whitematter
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(gm MINUS wm)",
-                                                            sip.App.GetDocument().GetMaskByName("gm"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(gm MINUS wm)", sip.App.GetDocument().GetMaskByName("gm"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # Whitematter minus (eyes, csf)
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(wm MINUS eyes MINUS csf)",
                                                             sip.App.GetDocument().GetMaskByName("wm"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # Air minus (wm, gm, csf, blood, skin)
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(air MINUS wm MINUS gm MINUS csf MINUS blood MINUS skin)",
                                                             sip.App.GetDocument().GetMaskByName("air"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # Blood minus (wm, gm, eyes, skin)
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(blood MINUS wm MINUS gm MINUS eyes MINUS skin)",
                                                             sip.App.GetDocument().GetMaskByName("blood"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # Cortical minus (wm, gm, air, eyes, blood)
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression(
-        "(cortical MINUS wm MINUS gm MINUS air MINUS eyes MINUS blood)",
-        sip.App.GetDocument().GetMaskByName("cortical"),
-        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-        sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(cortical MINUS wm MINUS gm MINUS air MINUS eyes MINUS blood)",
+                                                            sip.App.GetDocument().GetMaskByName("cortical"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
 
     # Cancellous minus (wm, gm, air, eyes, blood)
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression(
-        "(cancellous MINUS wm MINUS gm MINUS air MINUS eyes MINUS blood)",
-        sip.App.GetDocument().GetMaskByName("cancellous"),
-        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-        sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(cancellous MINUS wm MINUS gm MINUS air MINUS eyes MINUS blood)",
+                                                            sip.App.GetDocument().GetMaskByName("cancellous"),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
 
     # Cortical minus (skin, cancellous, csf)
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(cortical MINUS skin MINUS cancellous MINUS csf)",
                                                             sip.App.GetDocument().GetMaskByName("cortical"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # Cancellous minus (skin, csf)
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(cancellous MINUS skin MINUS csf)",
                                                             sip.App.GetDocument().GetMaskByName("cancellous"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # Fat minus (skin, wm, gm, eyes, air, blood, cortical, cancellous, csf)
@@ -203,15 +194,13 @@ def remove_overlap():
     # Eyes minus skin
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(eyes MINUS skin)",
                                                             sip.App.GetDocument().GetMaskByName("eyes"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # CSF minus eyes
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(csf MINUS eyes)",
                                                             sip.App.GetDocument().GetMaskByName("csf"),
-                                                            sip.App.GetDocument().GetSliceIndices(
-                                                                sip.Doc.OrientationXY),
+                                                            sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
 
