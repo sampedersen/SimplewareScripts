@@ -354,6 +354,18 @@ def finalize_sip_file(participant_id,folder_location,check_stage):
 
 
 def stop_start_visual_checks(current_participant, next_participant, folder_location):
+
+    """
+
+    Function to streamline the visual checking process by closing and saving the current file before generating and
+    opening the next participant's base file.
+
+    :param current_participant: (int) Current participant's 6-digit identifier (ex, 999999)
+    :param next_participant: (int)  Next participant's 6-digit identifier (ex, 888888)
+    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+
+    """
+
     # Close out current file
     finalize_sip_file(current_participant, folder_location, checkStage)
     sip.App.GetDocument().Close()
