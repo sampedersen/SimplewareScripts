@@ -8,14 +8,9 @@ directly within alternative IDEs.
 
 - [Installation](#installation) 
 - [Quality Checks](#quality-checks)
-  - [finalize_sip_file.py](#finalize_sip_filepy)
-  - [generate_base_file.py](#generate_base_filepy)
-  - [import_masks.py](#import_maskspy)
-  - [remove_overlap.py](#remove_overlappy)
-  - [set_colors_order.py](#set_colors_orderpy)
-  - [start_stop_visual_checks.py](#start_stop_visual_checkspy)
+  - [List of Scripts](#list-of-scripts)
 - [Segmentation](#segmentation)
-  - [generate_regenerate_csf_10.py](#generate_regenerate_csf_10py)
+
 
 
 
@@ -55,6 +50,7 @@ When implementing scripts, refer to the comments to ensure proper execution. Som
 execute on command. Templated scripts may require the user to specify the participant's ID number, sublist categorization, 
 target tissue masks, etc. Please see each script's comments for more information regarding user input. 
 
+#### List of Scripts
 - `finalize_sip_file.py`: Finalize the quality checking process at stage 1 or stage 2
 - `generate_base_file.py`: Generate the initial visual check/base.sip file for later quality checks 
 - `import_masks.py`: Import individual tissue mask into the current project file 
@@ -68,6 +64,3 @@ saving the next participant's base visual checking file
 This section is a work in progress. This folder will house scripts and functions utilized during the tissue segmentation 
 T1 weighted MRI scans using Synopsys Simpleware. This folder will mirror the Quality Checking folder by establishing a 
 module of functions that are then called through user-friendly scripts/templated scripts. 
-
-#### generate_regenerate_csf_10.py
-- WIP 
