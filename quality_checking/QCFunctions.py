@@ -366,9 +366,12 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
 
     """
 
-    # Close out current file
-    finalize_sip_file(current_participant, folder_location, checkStage)
+    # Save current file as <current_participant>_base.sip
+    participantFolder = f"{folder_location}FS6.0_sub-{current_participant}_ses01\\qualityCheck\\"
+    sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{current_participant}_base.sip")
+
+    # Close current file
     sip.App.GetDocument().Close()
-    # Open next participant
-    importFiles(next_participant, folder_location)
+    # Generate next participant's base file
+    generate_base_file(next_participant, folder_location)
 
