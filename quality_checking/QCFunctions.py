@@ -230,9 +230,8 @@ def generate_base_file(participant_id, folder_location):
 
     """
 
-
     # Establish participant's folder and location
-    participantFolder = folderLocation + "FS6.0_sub-" + str(participantID) + "_ses01\\"
+    participantFolder = folder_location + "FS6.0_sub-" + str(participant_id) + "_ses01\\"
 
     ### Check for T1.raw:
     # Participant's T1s usually exist within their base participant folder, but may exist in
@@ -247,7 +246,7 @@ def generate_base_file(participant_id, folder_location):
     # Preallocate T1 variable
     T1 = None
     # Naming structure, option 1
-    t1Name1 = "FS6.0_sub-" + str(participantID) + "_ses01_T1_rs.RAW"
+    t1Name1 = "FS6.0_sub-" + str(participant_id) + "_ses01_T1_rs.RAW"
     # Naming structure, option 2
     t1Name2 = "T1.RAW"
     # List of T1 naming options (1 and 2)
@@ -260,26 +259,29 @@ def generate_base_file(participant_id, folder_location):
         T1_path = participantFolder + name
         # If a version of the T1 exists in the participant's folder...
         if os.path.exists(T1_path):
-            T1 = T1_path        # ... set T1 to be the T1 path location and...
-            break               # ... stop looking for a T1.
+            T1 = T1_path  # ... set T1 to be the T1 path location and...
+            break  # ... stop looking for a T1.
 
     ### If able to locate a T1 file:
     if T1:
         # Load the T1 into a new sip file
         sip.App.GetInstance().ImportRawImage(T1,
-            sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
-            sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
-            sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0, 256, 256, 256).SetPixelType(sip.Doc.Float32)
-            )
+                                             sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
+                                             sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
+                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,
+                                                                                                            256, 256,
+                                                                                                            256).SetPixelType(
+                                                 sip.Doc.Float32)
+                                             )
 
-        # Rename background image as 999999_T1
-        sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(str(participantID) + "_T1")
+        # Rename background image as <participant_id>_T1
+        sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(str(participant_id) + "_T1")
 
-        # Begin importing masks
+        # Begin importing final tissue masks
         # Establish location for finalized masks from participant's folder
         maskLocation = participantFolder + "Binarized_masks\\idv_mask\\"
         # List of masks to be imported
-        masks = ["wm","gm","eyes","csf","air","blood","cancellous","cortical","skin","fat","muscle"]
+        masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
 
         ### For each mask in the list...
         for mask in masks:
@@ -294,7 +296,7 @@ def generate_base_file(participant_id, folder_location):
                 sip.ImportOptions.UnsignedCharPixel, 256, 256, 256, 1, 1, 1, 0,
                 sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
                 sip.CommonImportConstraints().SetWindowLevel(0, 0).SetCrop(0, 0, 0, 256, 256, 256)
-                )
+            )
             # ... Rename background image to mask's name...
             sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(maskName)
             # ... Copy background image into mask...
@@ -306,11 +308,11 @@ def generate_base_file(participant_id, folder_location):
         # Call the colorsOrderVisibility() function above
         colors_order_visibility()
 
-        ### Save file as <999999>_QC1.sip to participant's quality checking folder
-        qcSave = participantFolder + "qualityCheck\\sipFiles\\" + str(participantID) + "_QC1.sip"
+        ### Save file as <999999>_base.sip to participant's quality checking folder
+        qcSave = participantFolder + "qualityCheck\\sipFiles\\" + str(participant_id) + "_base.sip"
         sip.App.GetDocument().SaveAs(qcSave)
 
-    ### If the T1 was not able to be located, display a dialogue box indicating such
+    ### If the T1 was not locatable, display a dialogue box indicating such
     else:
         message_box("No RAW T1 scan found.")
 
