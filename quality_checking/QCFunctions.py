@@ -316,28 +316,9 @@ def generate_base_file(participant_id, folder_location):
     else:
         message_box("No RAW T1 scan found.")
 
-########################################################################################################################
 
 
-"""
 
-exportFiles
-    - Arguments: fileName (str), participantID (int), checkStage (int)
-        - participantID should be the participant's 6-digit identifier (ex, 999999)
-        - folderLocation should be the overall directory location that the individual's folder is housed within
-        - checkStage should be a 1 or 2 to indicate if this is the end of QC1 or QC2 
-    - Performs the following functions: 
-        - Standardizes the colors/order/visibility of masks before removing potential overlap 
-        - For each mask, binarizes and exports to the qualityCheck\\tisueMasks folder 
-        - Saves the project to qualityCheck\\sipFiles as <999999>_QC<1 or 2>
-    - Example of use: 
-        - QCFunctions.exportFiles(999999, "P:\\segmentationParticipants\\",1)
-        # Outcome: Binarizes and exports tissue masks to 
-        P:\\segmentationParticipants\\999999Folder\\qualityCheck\\tissueMasks and saves the project file as 999999_QC1.sip
-        to P:\\segmentationParticipants\\999999Folder\\qualityCheck\\sipFiles\\999999_QC1.sip
-        
-
-"""
 def exportFiles(participantID,folderLocation,checkStage):
 
     # Establish participant's folder and location
