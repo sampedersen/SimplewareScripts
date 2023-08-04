@@ -318,11 +318,21 @@ def generate_base_file(participant_id, folder_location):
 
 
 
+# Finalize the .sip file, save and export tissues
+def finalize_sip_file(participant_id,folder_location,check_stage):
+    """
 
-def exportFiles(participantID,folderLocation,checkStage):
+    Standardizes the colors/order/visibility of the masks in the .sip file before removing intersecting overlap,
+    binarizing and exporting the tissue masks to the quality check folder, and saving the .sip file.
+
+    :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
+    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+    :param check_stage: (int) Should be either 1 or 2 to indicate if this is the end of quality check #1 or #2
+
+    """
 
     # Establish participant's folder and location
-    participantFolder = f"{folderLocation}FS6.0_sub-{participantID}_ses01\\qualityCheck\\"
+    participantFolder = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\"
 
     # Masks to binarize/export
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
@@ -348,7 +358,7 @@ def exportFiles(participantID,folderLocation,checkStage):
 
 
     # Save project
-    sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participantID}_QC{checkStage}.sip")
+    sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participant_id}_QC{check_stage}.sip")
 
 
 ########################################################################################################################
@@ -378,7 +388,7 @@ stopStart
 """
 def stopStart(currentParticipant, checkStage, nextParticipant, folderLocation):
     # Close out current file
-    exportFiles(currentParticipant,folderLocation,checkStage)
+    finalize_sip_file(currentParticipant, folderLocation, checkStage)
     sip.App.GetDocument().Close()
     # Open next participant
     importFiles(nextParticipant,folderLocation)
