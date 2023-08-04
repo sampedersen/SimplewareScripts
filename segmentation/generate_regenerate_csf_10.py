@@ -21,7 +21,6 @@ firstGen = False
 
 # Import scanip_api3 and sys modules
 # ! python3
-import scanip_api3 as sip
 import sys
 
 # Add the script module to the path
@@ -30,7 +29,7 @@ module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\quality_checking\\"
 sys.path.append(module_path)
 
 # Import the custom module for segmentation
-import segmentation as seg
+from segmentation import segmentation as seg
 
 # Perform (re)generation:
 seg.generate_csf_10(firstGen)
