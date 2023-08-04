@@ -350,32 +350,10 @@ def finalize_sip_file(participant_id,folder_location,check_stage):
     sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participant_id}_QC{check_stage}.sip")
 
 
-########################################################################################################################
 
 
-"""
 
-stopStart
-    - Arguments: 
-        - currentParticipant (int), nextParticipant (int), folderLocation (str), checkStage (int)
-            - currentParticipant should be the current participant's 6-digit identifier (ex, 999999)
-            - checkStage should be a 1 or 2, indicating if the current file is at stage 1 of quality checking or stage 2
-            - nextParticipant should be the subsequent participant's 6-digit identifier (ex, 888888)
-            - folderLocation should be the overall folder in which the individuals' folder are *both* contained
-                - This script cannot currently be used for sets of participants in separate directories 
-    - Performs the following functions:
-        - Finishes up the QC process for the current participant (binarize/export/save)
-        - Closes the current participant's file
-        - Generates the next participant's QC1 file 
-    - Example of use:
-        QCFunctions.stopStart(999999, 2, 888888, "P:\\participantFolders\\") 
-        # Outcome: Currently opened file for 999999 is saved as 999999_QC2.sip to 
-        P:\\participantFolder\\999999Folder\\qualityCheck\\sipFiles and the tissue masks are binarized/exported to 
-        P:\\participantFolder\\999999Folder\\qualityCheck\\tissueMasks ; once completed, 999999_QC2.sip is closed and
-        888888_QC1.sip is generated within P:\\participantFolder\\888888Folder\\qualityCheck\\sipFiles
-        
-"""
-def stopStart(currentParticipant, checkStage, nextParticipant, folderLocation):
+def stop_start_visual_checks(currentParticipant, checkStage, nextParticipant, folderLocation):
     # Close out current file
     finalize_sip_file(currentParticipant, folderLocation, checkStage)
     sip.App.GetDocument().Close()
