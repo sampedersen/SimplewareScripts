@@ -54,7 +54,7 @@ nextParticipant = 100283
 # Primary functions 
 #qc.importFiles(participantID,folderLocation)
 #qc.exportFiles(participantID,folderLocation,checkStage)
-qc.stop_start_visual_checks(participantID, checkStage, nextParticipant, folderLocation)
+qc.stop_start_visual_checks(participantID, nextParticipant, folderLocation)
 
 # Secondary functions
 #message = "Insert message you want to display here."

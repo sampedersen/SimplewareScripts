@@ -353,10 +353,10 @@ def finalize_sip_file(participant_id,folder_location,check_stage):
 
 
 
-def stop_start_visual_checks(currentParticipant, checkStage, nextParticipant, folderLocation):
+def stop_start_visual_checks(current_participant, next_participant, folder_location):
     # Close out current file
-    finalize_sip_file(currentParticipant, folderLocation, checkStage)
+    finalize_sip_file(current_participant, folder_location, checkStage)
     sip.App.GetDocument().Close()
     # Open next participant
-    importFiles(nextParticipant,folderLocation)
+    importFiles(next_participant, folder_location)
 
