@@ -38,7 +38,7 @@ Notes for use:
 - Variables:
     - Examples below
     - participant_id: (int) Set this variable as the participant's 6-digit identifier (eg: 999999) 
-    - sublist: Set this variable to either be "v1", "v2", "v3", "ET_old", or "ET_new", depending on the sublist the 
+    - sublist: (str) Set this variable to either be "v1", "v2", "v3", "ET_old", or "ET_new", depending on the sublist the 
         target participant belongs to  
     - check_stage: (int) Set this variable as either 1 or 2, indicating if quality check #1 or quality check #2 is 
         being finalized  
