@@ -246,7 +246,7 @@ def generate_base_file(participant_id, folder_location):
     # Preallocate T1 variable
     T1 = None
     # Naming structure, option 1
-    t1Name1 = "FS6.0_sub-" + str(participant_id) + "_ses01_T1_rs.RAW"
+    t1Name1 = f"FS6.0sub-{str(participant_id)}_ses01_T1_rs.RAW"
     # Naming structure, option 2
     t1Name2 = "T1.RAW"
     # List of T1 naming options (1 and 2)
@@ -309,7 +309,7 @@ def generate_base_file(participant_id, folder_location):
         colors_order_visibility()
 
         ### Save file as <999999>_base.sip to participant's quality checking folder
-        qcSave = participantFolder + "qualityCheck\\sipFiles\\" + str(participant_id) + "_base.sip"
+        qcSave = f"{participantFolder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
         sip.App.GetDocument().SaveAs(qcSave)
 
     ### If the T1 was not locatable, display a dialogue box indicating such
