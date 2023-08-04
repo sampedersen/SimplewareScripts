@@ -375,3 +375,37 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     # Generate next participant's base file
     generate_base_file(next_participant, folder_location)
 
+
+
+
+
+def import_mask(mask, location):
+
+    """
+
+    Function to import participant's mask from specified location. Make sure there aren't any pre-existing backgrounds
+    with the name "Raw import [W:0.00 L:0.00]"
+
+    :param mask: (str) Mask intended to be imported
+    :param location: (str) Path to participant's individual folder.
+
+
+    """
+    # Combine mask name and location info
+    importInfo = f"{location}{mask}.raw"
+
+    # Import tissue mask as background image
+    sip.App.GetInstance().GetActiveDocument().ImportBackgroundFromRawImage(importInfo,
+                                                                           sip.ImportOptions.UnsignedCharPixel, 256,
+                                                                           256, 256, 1, 1, 1, 0,
+                                                                           sip.ImportOptions.BinaryFile,
+                                                                           sip.ImportOptions.LittleEndian,
+                                                                           sip.CommonImportConstraints().SetWindowLevel(
+                                                                               0, 0).SetCrop(0, 0, 0, 256, 256, 256)
+                                                                           )
+    # Rename background image to mask's name
+    sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"{mask}_old")
+    # Copy background image into mask
+    sip.App.GetDocument().CopyBackgroundToMask()
+    # Delete imported background image
+    sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_old"))
