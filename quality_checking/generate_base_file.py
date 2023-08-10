@@ -61,20 +61,20 @@ sublist = "v0"
 # Determine import directory location depending on specified sublist
 base_dir = "P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\\"
 if sublist == "v1":
-    base_location = f"{base_dir}PL_v1\\"
+    folder_location = f"{base_dir}PL_v1\\"
 elif sublist == "v2":
-    base_location = f"{base_dir}PL_v2\\"
+    folder_location = f"{base_dir}PL_v2\\"
 elif sublist == "v3":
-    base_location = f"{base_dir}PL_v3\\"
+    folder_location = f"{base_dir}PL_v3\\"
 elif sublist == "ET_old":
-    base_location = f"{base_dir}PL_ETold\\"
+    folder_location = f"{base_dir}PL_ETold\\"
 elif sublist == "ET_new":
-    base_location = f"{base_dir}PL_ETnew\\"
+    folder_location = f"{base_dir}PL_ETnew\\"
 else:
     qc.message_box("No directory found at the sublist specified. Please ensure that you entered either v1, v2, v3, "
                    "ET_old, or ET_new.")
-    base_location = "None"
+    folder_location = "None"
     exit()
 
 # Call the function to import from the specified participant's folder and generate the base.sip file
-qc.generate_base_file(participant_id, base_location)
+qc.generate_base_file(participant_id, folder_location)
