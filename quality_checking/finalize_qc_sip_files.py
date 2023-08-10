@@ -73,6 +73,7 @@ elif sublist == "ET_new":
 else:
     qc.message_box("No directory found at the sublist specified. Please ensure that you entered either v1, v2, v3, "
                    "ET_old, or ET_new.")
+    folder_location = "None"
     exit()
 
 # Finalize the sip file by exporting and saving to the specified participant's folder, either as QC1 or QC2
