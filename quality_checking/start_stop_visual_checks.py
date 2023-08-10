@@ -29,48 +29,27 @@ Notes for use:
 - If there is no .sip file currently opened in Simpleware, use the currently_opened_file variable below to indicate
     - If there is no .sip file, the script will generate the initial sip file for the participant listed as 
         current_participant
-    - If there is already a .sip opened, the script will close and save the file before generating and opening the next
-- Note that currently, participants must belong to the same subgroup; future iterations of this code will update to 
-    streamline across participant sublist groups/directories  
-
+    - If there is already a .sip opened, the script will close and save the file before generating and opening the next 
+    
 - Variables:
     - currently_opened_file: (Bool) Set this variable to be True or False to indicate if there is currently an sip file 
-        opened within Simpleware (True) or not (False)
+        opened within Simpleware
     - current_participant: (int) Set this variable as the current participant's 6-digit identifier (eg: 999999) 
     - next_participant: (int) Set this variable as the next participant's 6-digit identifier (eg: 888888)
-    - sublist: (str) Set this variable to either be "v1", "v2", "v3", "ET_old", or "ET_new", depending on the sublist the 
-        target participant belongs to  
-        
+    - folder_location: (str) Set this variable as the overall folder hosting the target participants' directories  
+
 ########################################################################################################################
 """
 
-"""
-Folder locations: 
-V1:
-"P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\PL_v1\\"
-V2:
-"P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\PL_v2\\"
-V3:
-"P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\PL_v3\\"
-ETold:
-"P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\PL_ETold\\"
-ETnew: 
-"P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\PL_ETnew\\"
-"""
 
 currently_opened_file = True
-# currently_opened_file = False                 # Example
+# currently_opened_file = False                         # Example
 current_participant = 999999
-# current_participant = 102936                  # Example
-sublist = "v1"
-# sublist = "ET_old"                            # Example
+# current_participant = 807290                          # Example
 next_participant = 888888
-# next_participant = 199472                     # Example
-
-
-
-
-folder_location = "INSERT\\FOLDER\\LOCATION\\HERE\\"
+# next_participant = 839782                             # Example
+sublists = "v1"
+# sublists = "v2"                                       # Example
 
 
 ########################################################################################################################
@@ -78,28 +57,26 @@ folder_location = "INSERT\\FOLDER\\LOCATION\\HERE\\"
 
 # Determine base directory location based on sublist
 base_dir = "P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\\"
-if sublist == "v1":
-    base_location = f"{base_dir}PL_v1\\"
-elif sublist == "v2":
-    base_location = f"{base_dir}PL_v2\\"
-elif sublist == "v3":
-    base_location = f"{base_dir}PL_v3\\"
-elif sublist == "ET_old":
-    base_location = f"{base_dir}PL_ETold\\"
-elif sublist == "ET_new":
-    base_location = f"{base_dir}PL_ETnew\\"
+if sublists == "v1":
+    folder_location = f"{base_dir}PL_v1\\"
+elif sublists == "v2":
+    folder_location = f"{base_dir}PL_v2\\"
+elif sublists == "v3":
+    folder_location = f"{base_dir}PL_v3\\"
+elif sublists == "ET_old":
+    folder_location = f"{base_dir}PL_ETold\\"
+elif sublists == "ET_new":
+    folder_location = f"{base_dir}PL_ETnew\\"
 else:
     qc.message_box("No directory found at the sublist specified. Please ensure that you entered either v1, v2, v3, "
                    "ET_old, or ET_new.")
-    base_location = "None"
+    folder_location = "None"
     exit()
 
-
-# If there is a file currently opened in Simpleware...
+# Check that there is currently a file opened within Simpleware
 if currently_opened_file:
-    # Save and close the current file before generating the next participant's file
-    qc.stop_start_visual_checks(current_participant, next_participant, base_location)
-# If there is not a file currently opened in Simpleware...
+    # If there is, perform the stop_start_visual_checks function
+    qc.stop_start_visual_checks(current_participant, next_participant, folder_location)
 else:
-    # Generate the current participant's file and save it to their folder, leaving the file open
-    qc.generate_base_file(current_participant, base_location)
+    # If there is not, perform the generate_base_file function for the current participant 
+    qc.generate_base_file(current_participant, folder_location)
