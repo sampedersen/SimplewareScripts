@@ -18,12 +18,12 @@ Date: 2023-07-20
 - This module is intended for use within Synopsys Simpleware ScanIP's scripting environment
 - These functions *cannot* be executed outside Simpleware or within alternative IDEs
 - Simpleware's scripting environment will not re-import modules within the same session; if any edits are made to this
-        module, exit Simpleware entirely and begin a new session. Otherwise, Simpleware will continue executing the 
-        originally imported version of the module
+    module, exit Simpleware entirely and begin a new session. Otherwise, Simpleware will continue executing the 
+    originally imported version of the module
 - Before using this module, it must be added to the path within Simpleware and imported. As a result, it is 
     recommended to run the other scripts hosted in the quality checking script folder, which are written with importing 
-    settings and necessary functions called appropriately.
-#######################################################################################################################    
+    settings and necessary functions called appropriately. 
+#######################################################################################################################
 """
 
 
@@ -39,7 +39,7 @@ def message_box(msg):
     :param msg: (str) Message to be displayed
 
     """
-    # Display a dialogue box with the designated message
+    # Display a dialogue box with a message
     sip.App.GetInstance().ShowMessage(msg)
 
 
@@ -61,30 +61,71 @@ def verify_import():
 
 
 # Set masks to pre-established colors and order within Simpleware
-def colors_order_visibility():
+def colors_order_visibility(color_palette):
     """
 
-        Assigns tissues their respective colors and order of appearance within Simpleware.
+    Assigns tissues their respective colors and order of appearance within Simpleware.
+    
+    :param color_palette: (str) Indicate which palette, Sam's or Aprinda's, which will be implemented when setting
+      tissue colors 
 
-        """
+    """
 
     # List of mask names
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
 
-    # Establish a dictionary for tissues and color codes
-    color_dict = {
-        "air": (65, 65, 65),
-        "blood": (200, 0, 0),
-        "cancellous": (22, 167, 11),
-        "cortical": (0, 255, 0),
-        "csf": (107, 220, 220),
-        "eyes": (194, 230, 230),
-        "fat": (239, 217, 151),
-        "gm": (176, 176, 176),
-        "muscle": (255, 64, 64),
-        "skin": (140, 120, 83),
-        "wm": (207, 221, 220),
-    }
+
+    # Determine the color palette to use
+    # If the user specifies for Aprinda's color palette, establish the color_dict with her values
+    if color_palette == "Aprinda":
+        color_dict = {
+            "air": (0, 128, 0),
+            "blood": (0, 0, 255),
+            "cancellous": (255, 0, 255),
+            "cortical": (0, 255, 0),
+            "csf": (128, 0, 255),
+            "eyes": (0, 128, 255),
+            "fat": (246, 240, 202),
+            "gm": (255, 128, 0),
+            "muscle": (255, 64, 64),
+            "skin": (0, 255, 255),
+            "wm": (255, 128, 192),
+        }
+
+    # If the user specifies for Sam's color palette, establish the color_dict with her values
+    if color_palette == "Sam":
+        color_dict = {
+            "air": (65, 65, 65),
+            "blood": (200, 0, 0),
+            "cancellous": (22, 167, 11),
+            "cortical": (0, 255, 0),
+            "csf": (107, 220, 220),
+            "eyes": (194, 230, 230),
+            "fat": (239, 217, 151),
+            "gm": (176, 176, 176),
+            "muscle": (255, 64, 64),
+            "skin": (140, 120, 83),
+            "wm": (207, 221, 220),
+        }
+
+    # If the user specifies an unrecognized color palette, alert them and continue with Sam's palette
+    else:
+        msg = "Color palette designation not recognized. Please indicate \"Aprinda\" or \"Sam\". Continuing " \
+              "with Sam\'s palette."
+        message_box(msg)
+        color_dict = {
+            "air": (65, 65, 65),
+            "blood": (200, 0, 0),
+            "cancellous": (22, 167, 11),
+            "cortical": (0, 255, 0),
+            "csf": (107, 220, 220),
+            "eyes": (194, 230, 230),
+            "fat": (239, 217, 151),
+            "gm": (176, 176, 176),
+            "muscle": (255, 64, 64),
+            "skin": (140, 120, 83),
+            "wm": (207, 221, 220),
+        }
 
     # Establish order of tissues
     order_dict = {
@@ -133,7 +174,8 @@ def remove_overlap():
     """
 
     # Greymatter minus whitematter
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(gm MINUS wm)", sip.App.GetDocument().GetMaskByName("gm"),
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(gm MINUS wm)",
+                                                            sip.App.GetDocument().GetMaskByName("gm"),
                                                             sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
@@ -192,14 +234,12 @@ def remove_overlap():
         sip.Doc.OrientationXY)
 
     # Eyes minus skin
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(eyes MINUS skin)",
-                                                            sip.App.GetDocument().GetMaskByName("eyes"),
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(eyes MINUS skin)", sip.App.GetDocument().GetMaskByName("eyes"),
                                                             sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
     # CSF minus eyes
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(csf MINUS eyes)",
-                                                            sip.App.GetDocument().GetMaskByName("csf"),
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(csf MINUS eyes)", sip.App.GetDocument().GetMaskByName("csf"),
                                                             sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
@@ -219,8 +259,9 @@ def generate_base_file(participant_id, folder_location):
 
     """
 
+
     # Establish participant's folder and location
-    participantFolder = folder_location + "FS6.0_sub-" + str(participant_id) + "_ses01\\"
+    participantFolder = f"{folder_location}FS6.0_sub-{str(participant_id)}_ses01\\"
 
     ### Check for T1.raw:
     # Participant's T1s usually exist within their base participant folder, but may exist in
@@ -235,7 +276,7 @@ def generate_base_file(participant_id, folder_location):
     # Preallocate T1 variable
     T1 = None
     # Naming structure, option 1
-    t1Name1 = f"FS6.0sub-{str(participant_id)}_ses01_T1_rs.RAW"
+    t1Name1 = f"FS6.0_sub-{str(participant_id)}_ses01_T1_rs.RAW"
     # Naming structure, option 2
     t1Name2 = "T1.RAW"
     # List of T1 naming options (1 and 2)
@@ -248,20 +289,17 @@ def generate_base_file(participant_id, folder_location):
         T1_path = participantFolder + name
         # If a version of the T1 exists in the participant's folder...
         if os.path.exists(T1_path):
-            T1 = T1_path  # ... set T1 to be the T1 path location and...
-            break  # ... stop looking for a T1.
+            T1 = T1_path        # ... set T1 to be the T1 path location and...
+            break               # ... stop looking for a T1.
 
     ### If able to locate a T1 file:
     if T1:
         # Load the T1 into a new sip file
         sip.App.GetInstance().ImportRawImage(T1,
-                                             sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
-                                             sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
-                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,
-                                                                                                            256, 256,
-                                                                                                            256).SetPixelType(
-                                                 sip.Doc.Float32)
-                                             )
+            sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
+            sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
+            sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0, 256, 256, 256).SetPixelType(sip.Doc.Float32)
+            )
 
         # Rename background image as <participant_id>_T1
         sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(str(participant_id) + "_T1")
@@ -285,7 +323,7 @@ def generate_base_file(participant_id, folder_location):
                 sip.ImportOptions.UnsignedCharPixel, 256, 256, 256, 1, 1, 1, 0,
                 sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
                 sip.CommonImportConstraints().SetWindowLevel(0, 0).SetCrop(0, 0, 0, 256, 256, 256)
-            )
+                )
             # ... Rename background image to mask's name...
             sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(maskName)
             # ... Copy background image into mask...
@@ -307,8 +345,10 @@ def generate_base_file(participant_id, folder_location):
 
 
 
+
+
 # Finalize the .sip file, save and export tissues
-def finalize_sip_file(participant_id,folder_location,check_stage):
+def finalize_sip_file(participant_id, folder_location, check_stage):
     """
 
     Standardizes the colors/order/visibility of the masks in the .sip file before removing intersecting overlap,
@@ -353,6 +393,7 @@ def finalize_sip_file(participant_id,folder_location,check_stage):
 
 
 
+# Function to close out current participant and generate next quality check file
 def stop_start_visual_checks(current_participant, next_participant, folder_location):
 
     """
@@ -370,21 +411,16 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     participantFolder = f"{folder_location}FS6.0_sub-{current_participant}_ses01\\qualityCheck\\"
     sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{current_participant}_base.sip")
 
-    # Close current file
+    # Close out current file
     sip.App.GetDocument().Close()
-    # Generate next participant's base file
+    # Generate next participant file
     generate_base_file(next_participant, folder_location)
-
-
-
-
 
 def import_mask(mask, location):
 
     """
 
-    Function to import participant's mask from specified location. Make sure there aren't any pre-existing backgrounds
-    with the name "Raw import [W:0.00 L:0.00]"
+    Function to import participant's mask from specified location.
 
     :param mask: (str) Mask intended to be imported
     :param location: (str) Path to participant's individual folder.
@@ -396,13 +432,10 @@ def import_mask(mask, location):
 
     # Import tissue mask as background image
     sip.App.GetInstance().GetActiveDocument().ImportBackgroundFromRawImage(importInfo,
-                                                                           sip.ImportOptions.UnsignedCharPixel, 256,
-                                                                           256, 256, 1, 1, 1, 0,
-                                                                           sip.ImportOptions.BinaryFile,
-                                                                           sip.ImportOptions.LittleEndian,
-                                                                           sip.CommonImportConstraints().SetWindowLevel(
-                                                                               0, 0).SetCrop(0, 0, 0, 256, 256, 256)
-                                                                           )
+        sip.ImportOptions.UnsignedCharPixel, 256, 256, 256, 1, 1, 1, 0,
+        sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
+        sip.CommonImportConstraints().SetWindowLevel(0, 0).SetCrop(0, 0, 0, 256, 256, 256)
+    )
     # Rename background image to mask's name
     sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"{mask}_old")
     # Copy background image into mask
