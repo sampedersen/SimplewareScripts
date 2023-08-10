@@ -43,6 +43,7 @@ Notes for use:
 ########################################################################################################################
 """
 
+
 participant_id = 999999
 # Example:
 # participant_id = 103495
@@ -51,7 +52,6 @@ sublist = "v0"
 # Example:
 # sublist = "v1"
 # sublist = "ET_old"
-
 
 
 
@@ -76,8 +76,5 @@ else:
     base_location = "None"
     exit()
 
-# Define path to participant's folder
-participant_folder = f"{base_location}FS6.0_sub-{participant_id}_ses01\\"
-
 # Call the function to import from the specified participant's folder and generate the base.sip file
-qc.generate_base_file(participant_id, participant_folder)
+qc.generate_base_file(participant_id, base_location)
