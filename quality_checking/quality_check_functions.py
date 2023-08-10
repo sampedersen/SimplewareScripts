@@ -65,9 +65,9 @@ def colors_order_visibility(color_palette):
     """
 
     Assigns tissues their respective colors and order of appearance within Simpleware.
-    
+
     :param color_palette: (str) Indicate which palette, Sam's or Aprinda's, which will be implemented when setting
-      tissue colors 
+      tissue colors
 
     """
 
@@ -333,7 +333,7 @@ def generate_base_file(participant_id, folder_location):
 
         ### Colors and order
         # Call the colorsOrderVisibility() function above
-        colors_order_visibility()
+        colors_order_visibility("Sam")
 
         ### Save file as <999999>_base.sip to participant's quality checking folder
         qcSave = f"{participantFolder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
@@ -367,7 +367,7 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
 
     # Standardize colors and order
-    colors_order_visibility()
+    colors_order_visibility("Aprinda")
     # Separate masks
     remove_overlap()
 
