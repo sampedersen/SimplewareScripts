@@ -93,7 +93,7 @@ def colors_order_visibility(color_palette):
         }
 
     # If the user specifies for Sam's color palette, establish the color_dict with her values
-    if color_palette == "Sam":
+    elif color_palette == "Sam":
         color_dict = {
             "air": (65, 65, 65),
             "blood": (200, 0, 0),
