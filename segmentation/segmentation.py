@@ -66,6 +66,7 @@ def verify_import():
 
 
 # Function to standardize colors of tissue masks
+# Update this for different color scheme options
 def colors_visibility(mask):
 
     """
@@ -104,6 +105,7 @@ def colors_visibility(mask):
 
 
 # Function to remove overlap between tissue masks
+# Consider renaming, double check proper overlap removal
 def separate_masks():
 
     """
