@@ -348,6 +348,7 @@ def generate_base_file(participant_id, folder_location):
 
 
 # Finalize the .sip file, save and export tissues
+# TODO: Check if export directories already exist; create if necessary
 def finalize_sip_file(participant_id, folder_location, check_stage):
     """
 
