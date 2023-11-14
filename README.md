@@ -60,3 +60,4 @@ This section is a work in progress. This folder will house scripts and functions
 T1 weighted MRI scans using Synopsys Simpleware. This folder will mirror the Quality Checking folder by establishing a 
 module of functions that are then called through user-friendly templated scripts. 
 - `skin.py`: Automate the segmentation of the skin mask. 
+- `csf.py`: Automate (re)generation of cerebrospinal fluid mask. 
