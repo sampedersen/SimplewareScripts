@@ -5,22 +5,10 @@ Script to finalize the quality checking process at either stage 1 or stage 2.
 
 Author: Sam Pedersen
 Date: 2023-08-02
-"""
 
-# ! python3
-import scanip_api3 as sip
-import sys
-
-# Add module to path for importing
-module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
-sys.path.append(module_path)
-
-# Import quality checking module
-import quality_check_functions as qc
-
-"""
 ########################################################################################################################
-Notes for use: 
+
+Notes for use:
 - This script finalizes the .sip file in either the quality check #1 or quality check #2, standardizing the 
     colors/order/visibility of the  masks before removing overlap, binarizing the masks, and exporting them to the 
     quality checking tissue mask folder before saving the .sip file 
@@ -42,10 +30,8 @@ Notes for use:
         target participant belongs to    
     - check_stage: (int) Set this variable as either 1 or 2, indicating if quality check #1 or quality check #2 is 
         being finalized
-
-########################################################################################################################
 """
-
+########################################################################################################################
 
 participant_id = 999999
 # participant_id = 103294               # Example
@@ -54,9 +40,9 @@ sublist = "v1"
 check_stage = 1
 # check_stage = 2                       # Example
 
-
 ########################################################################################################################
 # Execute the script
+# Please do not edit beyond this point (or do so at your own risk)
 
 # Determine base directory location based on sublist
 base_dir = "P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\\"
@@ -75,6 +61,17 @@ else:
                    "ET_old, or ET_new.")
     folder_location = "None"
     exit()
+
+# ! python3
+import scanip_api3 as sip
+import sys
+
+# Add module to path for importing
+module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
+sys.path.append(module_path)
+
+# Import quality checking module
+import quality_check_functions as qc
 
 # Finalize the sip file by exporting and saving to the specified participant's folder, either as QC1 or QC2
 qc.finalize_sip_file(participant_id, folder_location, check_stage)
