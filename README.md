@@ -58,4 +58,4 @@ saving the next participant's base visual checking file
 ### Segmentation
 This section is a work in progress. This folder will house scripts and functions utilized during the tissue segmentation 
 T1 weighted MRI scans using Synopsys Simpleware. This folder will mirror the Quality Checking folder by establishing a 
-module of functions that are then called through user-friendly scripts/templated scripts. 
+module of functions that are then called through user-friendly templated scripts. 
