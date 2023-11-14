@@ -361,8 +361,13 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
 
     """
 
-    # Establish participant's folder and location
+    # Establish participant's folder and export location
     participantFolder = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\"
+    exportLocation = f"{participantFolder}tissueMasks\\"
+
+    # If tissueMasks directory DNE, make it
+    if not os.path.exists(exportLocation):
+        os.makedirs(exportLocation)
 
     # Masks to binarize/export
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
@@ -375,9 +380,7 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
     # Binarize and export tissue masks
     for mask in masks:
         name = mask
-        exportLocation = f"{participantFolder}tissueMasks\\"
         exportingMask = exportLocation + name + ".raw"
-
 
         # Binarize
         sip.App.GetDocument().GetGenericMaskByName(name).Activate()
