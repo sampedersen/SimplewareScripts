@@ -1,8 +1,22 @@
-# Binarize and export tissue masks before saving the file
-# Created by Samantha Pedersen (09/09/2021)
-# Last updated: 11/17/22
-#! python3
-from scanip_api3 import *
+"""
+binarizeExportSave.py
+
+Automating the process for binarizing & exporting tissue masks before saving file.
+
+Note: Update in progress
+Improving for flexibility across subgroups and directory locations.
+
+Author: Sam Pedersen
+Date: 2021-09-09
+"""
+
+
+
+
+
+
+
+
 
 ########################################################################################################################
 ###########################################       !!! README !!!         ###############################################
@@ -11,43 +25,36 @@ from scanip_api3 import *
 # Script function:
 #   1. Binarize and export each mask
 #   2. Saves file as <SUBJ_NUMBER>_Final.sip
+# Masks to export: (must exist within project file):
+#   - "wm", "gm", "eyes", "csf", "air", "blood", "bone", "cancellous", "cortical", "skin", "fat", "muscle", "uniform"
 
-# Masks to export (ensure these exist within the project file) 
-#   - "wm"
-#   - "gm"
-#   - "eyes"
-#   - "csf"
-#   - "air"
-#   - "blood"
-#   - "bone"
-#   - "cancellous"
-#   - "cortical"
-#   - "skin"
-#   - "fat"
-#   - "muscle"
-#   - "uniform"
+# Identify the following variables:
+subj_id = "999999"
+subgroup = "v1"
+stage = "initial"
+segmentor = "Sam"
+drive = "P"
 
-# !! IMPORTANT !!
-# Change SUBJ_ID to match the participant's 6-digit identifier before executing script 
-# Example:
-# SUBJ_ID = 213456
-SUBJ_ID = 999999
 
-# Put your name here
-SEGMENTOR = "Sam"
+#! python3
+from scanip_api3 import *
 
 ########################################################################################################################
 
-# Note: This script is intended for use with Participant List_V3
+# Establish drive assignment, either P-drive or Z-drive
+mid_dir = "drive\\"
+base_dir = "preallocating"
 
-# Note: Some user operate within the Z-drive and some operate within the P-drive
-# The code below indicates the Z-drive; if you are using the P-drive, simply replace Z:\\ with P:\\
-# Example:
-# directory = "P:\\ACT-head_models\\FEM\\manual_segmentation\\Participant_list_v3\\idvParticipants\\"
+if drive == "P":
+    base_dir = "P:\\"
+elif drive == "Z":
+    base_dir = "Z:\\"
+participants = "%s%s%s\\"% (base_dir,mid_dir,subgroup)
+participant = "%s%d"
 directory = "Z:\\ACT-head_models\\FEM\\manual_segmentation\\Education_Training\\"
 
 # Participant folder
-subjFolder = "FS6.0_sub-" + str(SUBJ_ID) + "_ses01\\"
+subjFolder = "FS6.0_sub-" + str(subj_id) + "_ses01\\"
 # Pathway to participant folder
 subjPathway = directory + subjFolder
 # Pathway to Binarized_masks folder
@@ -77,4 +84,4 @@ for i in range (0,upperLimit):
     i = i+1
 
 # Save project as <subj_number>_Final.sip
-App.GetDocument().SaveAs(sipFolder + str(SUBJ_ID) + "_" + SEGMENTOR + ".sip")
+App.GetDocument().SaveAs(sipFolder + str(subj_id) + "_" + segmentor + ".sip")
