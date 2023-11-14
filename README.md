@@ -6,7 +6,7 @@ directly within alternative IDEs.
 
 ## Table of Contents
 
-- [Installation](#installation) 
+- [Installation & Use](#installation) 
 - [Quality Checks](#quality-checks)
   - [List of Scripts](#list-of-scripts)
 - [Segmentation](#segmentation)
@@ -14,38 +14,33 @@ directly within alternative IDEs.
 
 
 
-### Installation
+### Installation & Use
 Installation is intended to be relatively straight forward and easy. 
 - Download the repository to your device and add it to your folder within the shared drive. 
+- Once downloaded, load the script you would like to utlize into Simpleware's scripting environment
+- Review the comments/readme section of the script for specific usage instructions
 - As long as you are mounted to the P-drive, you should be able to implement the scripts with minor/no modifications 
-- Template scripts are pre-loaded to import modules from the P-drive; for example: 
+- Template scripts are pre-loaded with the code below so as to import this module and its functions into the scripting enviroment.  
 ```python
-#! python3
-import scanip_api3 as sip
 import sys
-
 module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
 sys.path.append(module_path)
-
 import quality_check_functions as qc
 
 ```
-- This is the default location to import modules and functions from; ensure this coincides with the target directory and
-version of the module you wish to import and utilize 
+- This adds a master version of the module to the system path for importing to the environment
+- If you are having issues, ensure that the module exists at the specied module_path location and that the module is up-to-date
+- Please only edit the shared-drive version of the module if absolutely necessary and with extreme caution
 - Note that Simpleware will not re-import modules within the same session; if edits are made to the module, exit the 
 Simpleware window, re-open, and re-import the updated module. Otherwise, Simpleware will continue using the originally
 imported version of the module
-- When executing the scripts within Simpleware, simply load-in the Python script you would like to use; assuming 
-directory paths do not need updates, scripts should be ready to implement 
 
 ### Quality Checks
-This folder contains scripts, templated scripts, and the module for the segmentation quality checking process. 
+This folder contains templated scripts and the module for the segmentation quality checking process. 
 `quality_check_functions.py` is the module hosting all functions; the file itself should not be executed 
-withing Simpleware. Instead, users should implement one of the scripts/templated scripts included in the folder.
-
-When using these scripts, please avoid making modifications/edits to the original module itself within the shared drive. 
-Please implement edits to a localized version or direct concerns to the author. 
-
+withing Simpleware. Instead, users should implement one of the templated scripts included in the repository.
+ 
+Please implement edits to a localized version or direct concerns to the author.
 When implementing scripts, refer to the comments to ensure proper execution. Some do not require user input and will 
 execute on command. Templated scripts may require the user to specify the participant's ID number, sublist categorization, 
 target tissue masks, etc. Please see each script's comments for more information regarding user input. 
