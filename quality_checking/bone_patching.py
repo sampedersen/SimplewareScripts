@@ -1,5 +1,5 @@
 """
-bone_preprocessing.py
+bone_patching.py
 
 Automate pre-processing applications to bone mask for quality checking procedures.
 
