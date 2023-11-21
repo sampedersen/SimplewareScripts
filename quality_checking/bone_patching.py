@@ -5,46 +5,59 @@ Automate pre-processing applications to bone mask for quality checking procedure
 
 Author: Sam Pedersen
 Date: 2023-11-14
-
+"""
 ########################################################################################################################
 """
-"""
-Notes:
-- WIP
-- patched_bone is the final patched bone mask
+Notes for use:
+
+- patched_bone is the final patched bone mask to implement additional edits upon 
 - unpatched_bone_regions indicates the areas that did not get patched 
 - patched_bone_regions_raw indicates areas that received patch processing, before corrections
 - patched_bone_regions_corrected indicates areas that received patch processing, following corrections
-- Edits will be derived from whichever mask is called "bone"; original mask and properties will be preserved and untouched
-Cannot have:
-
+- Edits will be derived from whichever mask is called "bone"; original mask and properties will be preserved and 
+    untouched
+    
+- Please specify the participant's 6-digit identifier in the variable participant_id
+- Please specify the sublist the participant belongs to in the variable sublist  
+- Please specify if this project file needs the Binarized_masks/final/bone.raw file imported or not using the 
+    import_bone variable
+    - import_bone = False if you do not need it imported
+    - import_bone = True if you do need it imported 
+    
+Ensure that the pre-existing masks in your .sip file do not have any of the following names:
 - Copy of bone
-- bone_old
+- bone_old 
+- patched_bone
+- unpatched_bone_regions
+- patched_bone_regions_raw
+- patched_bone_regions_corrected
+If you have a naming conflict, rename the pre-existing mask to be at least 1 character different 
 
 """
+########################################################################################################################
 
-# Import bone, T/F (avoid re-importing if users is re-patching intermittently)
-import_bone = False
 participant_id = 999999
+# participant_id = 100220       # Example
 sublist = "v3"
+# sublist = "v1"                # Example
+import_bone = False
+# import_bone = True            # Example
 
-######
+########################################################################################################################
 
+# Import necessary packages
 # ! python3
 import scanip_api3 as sip
 import sys
-
 # Add module to path for importing
 module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
 sys.path.append(module_path)
-
 # Import quality checking module
 import quality_check_functions as qc
 
-######
+########################################################################################################################
 
-
-
+# Execute script functions
 if import_bone == True:
     # Import bone if needed; importing from Binarized_masks\final
     # Determine base directory location based on sublist
@@ -69,50 +82,5 @@ if import_bone == True:
     # Define path to participant's tissue masks folder
     mask_folder = f"{participant_folder}\\Binarized_masks\\final\\"
     qc.import_mask("bone",mask_folder)
-    App.GetDocument().GetGenericMaskByName("bone_old").SetName("bone")
-
-# Duplicate base bone masks to isolate large regions of skull
-App.GetDocument().GetGenericMaskByName("bone").Activate()
-App.GetDocument().GetActiveGenericMask().Duplicate()
-App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("unpatched_bone_regions")
-
-# Isolate regions thicker than 1 voxel and bigger than 15 voxels as an island
-App.GetDocument().GetGenericMaskByName("unpatched_bone_regions").Activate()
-App.GetDocument().ApplyErodeFilter(Doc.TargetMask, 1, 1, 1, 0)
-App.GetDocument().ApplyIslandRemovalFilter(15)
-
-# Redilate mask, intersect with original bone mask
-App.GetDocument().ApplyDilateFilter(Doc.TargetMask, 1, 1, 1, 0)
-App.GetDocument().ReplaceMaskUsingBooleanExpression("(unpatched_bone_regions AND bone)", App.GetDocument().GetMaskByName("unpatched_bone_regions"), App.GetDocument().GetSliceIndices(Doc.OrientationXY), Doc.OrientationXY)
-
-# Duplicate to isolate small pieces, removing islands smaller than 15
-App.GetDocument().GetGenericMaskByName("bone").Activate()
-App.GetDocument().GetActiveGenericMask().Duplicate()
-App.GetDocument().GetGenericMaskByName("Copy of bone").Activate()
-App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("patched_bone_regions_raw")
-App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_raw MINUS unpatched_bone_regions)", App.GetDocument().GetMaskByName("patched_bone_regions_raw"), App.GetDocument().GetSliceIndices(Doc.OrientationXY), Doc.OrientationXY)
-App.GetDocument().GetGenericMaskByName("patched_bone_regions_raw").Activate()
-App.GetDocument().ApplyIslandRemovalFilter(15)
-
-# Duplicate and create patched mask
-App.GetDocument().GetActiveGenericMask().Duplicate()
-App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_raw").Activate()
-App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_raw").SetName("patched_bone_regions_corrected")
-App.GetDocument().ApplyCloseFilter(Doc.TargetMask, 2, 2, 2, 0)
-App.GetDocument().ApplyDilateFilter(Doc.TargetMask, 1, 1, 1, 0)
-
-# Remove potential overlap in interior region
-App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS wm)", App.GetDocument().GetMaskByName("patched_bone_regions_corrected"), App.GetDocument().GetSliceIndices(Doc.OrientationXY), Doc.OrientationXY)
-App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS gm)", App.GetDocument().GetMaskByName("patched_bone_regions_corrected"), App.GetDocument().GetSliceIndices(Doc.OrientationXY), Doc.OrientationXY)
-App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS csf)", App.GetDocument().GetMaskByName("patched_bone_regions_corrected"), App.GetDocument().GetSliceIndices(Doc.OrientationXY), Doc.OrientationXY)
-
-# Create patched bone mask
-App.GetDocument().GetGenericMaskByName("patched_bone_regions_corrected").Activate()
-App.GetDocument().GetActiveGenericMask().Duplicate()
-App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_corrected").Activate()
-App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_corrected").SetName("patched_bone")
-App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone OR bone)", App.GetDocument().GetMaskByName("patched_bone"), App.GetDocument().GetSliceIndices(Doc.OrientationYZ), Doc.OrientationYZ)
-
-
-
-
+    sip.App.GetDocument().GetGenericMaskByName("bone_old").SetName("bone")
+qc.bone_patching()
