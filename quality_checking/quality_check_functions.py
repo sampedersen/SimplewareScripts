@@ -43,9 +43,6 @@ def message_box(msg):
     sip.App.GetInstance().ShowMessage(msg)
 
 
-
-
-
 # Verify that the module has been imported
 def verify_import():
     """
@@ -55,9 +52,6 @@ def verify_import():
     """
     # Displays predetermined message within dialogue box
     message_box("Quality check module imported successfully!")
-
-
-
 
 
 # Set masks to pre-established colors and order within Simpleware
@@ -162,7 +156,101 @@ def colors_order_visibility(color_palette):
         sip.App.GetDocument().GetActiveGenericMask().SetVisible(True)
 
 
+def import_mask(mask, location):
 
+    """
+
+    Function to import participant's mask from specified location.
+
+    :param mask: (str) Mask intended to be imported
+    :param location: (str) Path to participant's individual folder.
+
+
+    """
+    # Combine mask name and location info
+    importInfo = f"{location}{mask}.raw"
+
+    # Import tissue mask as background image
+    sip.App.GetInstance().GetActiveDocument().ImportBackgroundFromRawImage(importInfo,
+        sip.ImportOptions.UnsignedCharPixel, 256, 256, 256, 1, 1, 1, 0,
+        sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
+        sip.CommonImportConstraints().SetWindowLevel(0, 0).SetCrop(0, 0, 0, 256, 256, 256)
+    )
+    # Rename background image to mask's name
+    sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"{mask}_old")
+    # Copy background image into mask
+    sip.App.GetDocument().CopyBackgroundToMask()
+    # Delete imported background image
+    sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_old"))
+
+
+def bone_patching():
+    """
+
+    Function to apply bone patching process to bone mask during QC.
+    Requires "bone" be present in the sip file.
+
+    """
+
+    # Duplicate base bone masks to isolate large regions of skull
+    sip.App.GetDocument().GetGenericMaskByName("bone").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("unpatched_bone_regions")
+
+    # Isolate regions thicker than 1 voxel and bigger than 15 voxels as an island
+    sip.App.GetDocument().GetGenericMaskByName("unpatched_bone_regions").Activate()
+    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
+    sip.App.GetDocument().ApplyIslandRemovalFilter(15)
+
+    # Redilate mask, intersect with original bone mask
+    sip.App.GetDocument().ApplyDilateFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(unpatched_bone_regions AND bone)",
+                                                        sip.App.GetDocument().GetMaskByName("unpatched_bone_regions"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+
+    # Duplicate to isolate small pieces, removing islands smaller than 15
+    sip.App.GetDocument().GetGenericMaskByName("bone").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("patched_bone_regions_raw")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_raw MINUS unpatched_bone_regions)",
+                                                        sip.App.GetDocument().GetMaskByName("patched_bone_regions_raw"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("patched_bone_regions_raw").Activate()
+    sip.App.GetDocument().ApplyIslandRemovalFilter(15)
+    # Duplicate and create patched mask
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_raw").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_raw").SetName("patched_bone_regions_corrected")
+    sip.App.GetDocument().ApplyCloseFilter(sip.Doc.TargetMask, 2, 2, 2, 0)
+    sip.App.GetDocument().ApplyDilateFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
+    # Remove potential overlap in interior region
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS wm)",
+                                                        sip.App.GetDocument().GetMaskByName(
+                                                            "patched_bone_regions_corrected"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS gm)",
+                                                        sip.App.GetDocument().GetMaskByName(
+                                                            "patched_bone_regions_corrected"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS csf)",
+                                                        sip.App.GetDocument().GetMaskByName(
+                                                            "patched_bone_regions_corrected"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
+                                                        sip.Doc.OrientationXY)
+    # Create patched bone mask
+    sip.App.GetDocument().GetGenericMaskByName("patched_bone_regions_corrected").Activate()
+    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_corrected").Activate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_corrected").SetName("patched_bone")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone OR bone)",
+                                                        sip.App.GetDocument().GetMaskByName("patched_bone"),
+                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationYZ),
+                                                        sip.Doc.OrientationYZ)
 
 
 # Remove the overlap between masks
@@ -242,9 +330,6 @@ def remove_overlap():
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(csf MINUS eyes)", sip.App.GetDocument().GetMaskByName("csf"),
                                                             sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
-
-
-
 
 
 # Generate the initial quality check #1 .sip file
@@ -335,6 +420,15 @@ def generate_base_file(participant_id, folder_location):
         # Call the colorsOrderVisibility() function above
         colors_order_visibility("Sam")
 
+
+        # Import Binarized_masks/final/bone.raw
+        bone_file = participantFolder+ "Binarized_masks\\final\\"
+        import_mask("bone",bone_file)
+        sip.App.GetDocument().GetGenericMaskByName("bone_old").SetName("bone")
+
+        # Perform bone patching
+        bone_patching()
+
         ### Save file as <999999>_base.sip to participant's quality checking folder
         qcSave = f"{participantFolder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
         sip.App.GetDocument().SaveAs(qcSave)
@@ -342,9 +436,6 @@ def generate_base_file(participant_id, folder_location):
     ### If the T1 was not locatable, display a dialogue box indicating such
     else:
         message_box("No RAW T1 scan found.")
-
-
-
 
 
 # Finalize the .sip file, save and export tissues
@@ -393,9 +484,6 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
     sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participant_id}_QC{check_stage}.sip")
 
 
-
-
-
 # Function to close out current participant and generate next quality check file
 def stop_start_visual_checks(current_participant, next_participant, folder_location):
 
@@ -419,97 +507,4 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     # Generate next participant file
     generate_base_file(next_participant, folder_location)
 
-def import_mask(mask, location):
 
-    """
-
-    Function to import participant's mask from specified location.
-
-    :param mask: (str) Mask intended to be imported
-    :param location: (str) Path to participant's individual folder.
-
-
-    """
-    # Combine mask name and location info
-    importInfo = f"{location}{mask}.raw"
-
-    # Import tissue mask as background image
-    sip.App.GetInstance().GetActiveDocument().ImportBackgroundFromRawImage(importInfo,
-        sip.ImportOptions.UnsignedCharPixel, 256, 256, 256, 1, 1, 1, 0,
-        sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
-        sip.CommonImportConstraints().SetWindowLevel(0, 0).SetCrop(0, 0, 0, 256, 256, 256)
-    )
-    # Rename background image to mask's name
-    sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"{mask}_old")
-    # Copy background image into mask
-    sip.App.GetDocument().CopyBackgroundToMask()
-    # Delete imported background image
-    sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_old"))
-
-def bone_patching():
-    """
-
-    Function to apply bone patching process to bone mask during QC.
-    Requires "bone" be present in the sip file.
-
-    """
-
-    # Duplicate base bone masks to isolate large regions of skull
-    sip.App.GetDocument().GetGenericMaskByName("bone").Activate()
-    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("unpatched_bone_regions")
-
-    # Isolate regions thicker than 1 voxel and bigger than 15 voxels as an island
-    sip.App.GetDocument().GetGenericMaskByName("unpatched_bone_regions").Activate()
-    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
-    sip.App.GetDocument().ApplyIslandRemovalFilter(15)
-
-    # Redilate mask, intersect with original bone mask
-    sip.App.GetDocument().ApplyDilateFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(unpatched_bone_regions AND bone)",
-                                                        sip.App.GetDocument().GetMaskByName("unpatched_bone_regions"),
-                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-                                                        sip.Doc.OrientationXY)
-
-    # Duplicate to isolate small pieces, removing islands smaller than 15
-    sip.App.GetDocument().GetGenericMaskByName("bone").Activate()
-    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").Activate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("patched_bone_regions_raw")
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_raw MINUS unpatched_bone_regions)",
-                                                        sip.App.GetDocument().GetMaskByName("patched_bone_regions_raw"),
-                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-                                                        sip.Doc.OrientationXY)
-    sip.App.GetDocument().GetGenericMaskByName("patched_bone_regions_raw").Activate()
-    sip.App.GetDocument().ApplyIslandRemovalFilter(15)
-    # Duplicate and create patched mask
-    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_raw").Activate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_raw").SetName("patched_bone_regions_corrected")
-    sip.App.GetDocument().ApplyCloseFilter(sip.Doc.TargetMask, 2, 2, 2, 0)
-    sip.App.GetDocument().ApplyDilateFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
-    # Remove potential overlap in interior region
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS wm)",
-                                                        sip.App.GetDocument().GetMaskByName(
-                                                            "patched_bone_regions_corrected"),
-                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-                                                        sip.Doc.OrientationXY)
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS gm)",
-                                                        sip.App.GetDocument().GetMaskByName(
-                                                            "patched_bone_regions_corrected"),
-                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-                                                        sip.Doc.OrientationXY)
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone_regions_corrected MINUS csf)",
-                                                        sip.App.GetDocument().GetMaskByName(
-                                                            "patched_bone_regions_corrected"),
-                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY),
-                                                        sip.Doc.OrientationXY)
-    # Create patched bone mask
-    sip.App.GetDocument().GetGenericMaskByName("patched_bone_regions_corrected").Activate()
-    sip.App.GetDocument().GetActiveGenericMask().Duplicate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_corrected").Activate()
-    sip.App.GetDocument().GetGenericMaskByName("Copy of patched_bone_regions_corrected").SetName("patched_bone")
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(patched_bone OR bone)",
-                                                        sip.App.GetDocument().GetMaskByName("patched_bone"),
-                                                        sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationYZ),
-                                                        sip.Doc.OrientationYZ)
