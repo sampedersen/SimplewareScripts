@@ -465,6 +465,12 @@ def generate_base_file(participant_id, folder_location):
         sip.App.GetDocument().GetGenericMaskByName("uniform").Activate()
         sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 16)
 
+        # Move dividers
+        sip.App.GetDocument().GetGenericMaskByName("---").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 12)
+        sip.App.GetDocument().GetGenericMaskByName("----").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 16)
+
         # Save file as <999999>_base.sip to participant's quality checking folder
         qcSave = f"{participantFolder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
         sip.App.GetDocument().SaveAs(qcSave)
