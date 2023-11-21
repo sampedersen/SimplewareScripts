@@ -54,7 +54,7 @@ def verify_import():
 
     """
     # Displays predetermined message within dialogue box
-    message_box("Quality check module imported successfully.")
+    message_box("Quality check module imported successfully!")
 
 
 
