@@ -362,7 +362,7 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
 
     # Establish participant's folder and export location
     participantFolder = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\"
-    exportLocation = f"{participantFolder}tissueMasks_TEST\\"
+    exportLocation = f"{participantFolder}tissueMasks\\"
 
     # If tissueMasks directory DNE, make it
     if not os.path.exists(exportLocation):
@@ -390,7 +390,7 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
 
 
     # Save project
-    sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participant_id}_QC{check_stage}_TEST.sip")
+    sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participant_id}_QC{check_stage}.sip")
 
 
 
