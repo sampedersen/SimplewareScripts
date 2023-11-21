@@ -350,6 +350,31 @@ def generate_base_file(participant_id, folder_location):
 # Finalize the .sip file, save and export tissues
 # TODO: Create a function to test if finazlize_sip_file() is updated for directory creation
 
+def testing_finalize_sip_file(participant_id, folder_location, check_stage):
+    # Establish participant's folder and export location
+    participantFolder = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\"
+    exportLocation = f"{participantFolder}tissueMasks_TEST\\"
+    # If tissueMasks directory DNE, make it
+    if not os.path.exists(exportLocation):
+        os.makedirs(exportLocation)
+    # Masks to binarize/export
+    masks = ["wm"]
+    # Binarize and export tissue masks
+    for mask in masks:
+        name = mask
+        exportingMask = exportLocation + name + ".raw"
+
+        # Binarize
+        sip.App.GetDocument().GetGenericMaskByName(name).Activate()
+        sip.App.GetDocument().ApplyBinarisationFilter()
+
+        # Export the mask
+        sip.App.GetDocument().GetMaskByName(name).RawExport(exportingMask)
+    # Save project
+    sip.App.GetDocument().SaveAs(f"{participantFolder}sipFiles\\{participant_id}_QC1Test.sip")
+
+
+
 
 def finalize_sip_file(participant_id, folder_location, check_stage):
     """
