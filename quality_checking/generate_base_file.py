@@ -25,6 +25,7 @@ import quality_check_functions as qc
 Notes for use: 
 - This script creates a new .sip file by loading the participant's T1.RAW image, imports the final tissue masks, sets 
     the masks' colors and order, and saves the files as <participant_id>_base.sip to their quality check folder
+- Additionally, imports Binarized_masks/final/bone.raw and performs preliminary patching processing to the mask
 - There cannot be a currently opened project file already loaded into Simpleware when running this; close it first. 
 - Final tissue masks must pre-exist in the participant's Binarized_masks/idv_masks folder 
 - T1.RAW must be in the participant's overall folder; script will end and notify the user if the T1 cannot be found
@@ -45,15 +46,10 @@ Notes for use:
 
 
 participant_id = 999999
-# Example:
-# participant_id = 103495
+# participant_id = 103495   # Example
 
-sublist = "v0"
-# Example:
-# sublist = "v1"
-# sublist = "ET_old"
-
-
+sublist = "v1"
+# sublist = "v1"            # Example
 
 ########################################################################################################################
 # Execute the script:
