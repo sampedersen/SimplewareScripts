@@ -426,14 +426,50 @@ def generate_base_file(participant_id, folder_location):
         import_mask("bone",bone_file)
         sip.App.GetDocument().GetGenericMaskByName("bone_old").SetName("bone")
 
+        # Import Binarized_masks/final/uniform.raw
+        uniform_file = participantFolder+ "Binarized_masks\\final\\"
+        import_mask("uniform",bone_file)
+        sip.App.GetDocument().GetGenericMaskByName("uniform_old").SetName("uniform")
+
         # Perform bone patching
         bone_patching()
 
-        ### Save file as <999999>_base.sip to participant's quality checking folder
+        # Organize additional bone + uniform masks
+        # Create a divider mask
+        sip.App.GetDocument().CreateMask("---", sip.Colour(0, 255, 63))
+
+        # Move patched_bone_regions_corrected
+        sip.App.GetDocument().GetGenericMaskByName("patched_bone_regions_corrected").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 17)
+
+        # Move patched_bone_regions_raw
+        sip.App.GetDocument().GetGenericMaskByName("patched_bone_regions_raw").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 16)
+
+        # Move unpatched_bone_regions
+        sip.App.GetDocument().GetGenericMaskByName("unpatched_bone_regions").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 15)
+
+        # Create a divider mask
+        sip.App.GetDocument().CreateMask("----", sip.Colour(0, 159, 255))
+
+        # Move patched_bone
+        sip.App.GetDocument().GetGenericMaskByName("patched_bone").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 18)
+
+        # Move bone
+        sip.App.GetDocument().GetGenericMaskByName("bone").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 17)
+
+        # Move uniform
+        sip.App.GetDocument().GetGenericMaskByName("uniform").Activate()
+        sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 16)
+
+        # Save file as <999999>_base.sip to participant's quality checking folder
         qcSave = f"{participantFolder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
         sip.App.GetDocument().SaveAs(qcSave)
 
-    ### If the T1 was not locatable, display a dialogue box indicating such
+    # If the T1 was not locatable, display a dialogue box indicating such
     else:
         message_box("No RAW T1 scan found.")
 
