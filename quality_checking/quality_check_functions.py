@@ -355,7 +355,7 @@ def generate_base_file(participant_id, folder_location):
     """
 
     Creates a new .sip file by loading in the participant's T1.RAW, imports tissue masks, sets the masks' colors and
-    orders, and saves it as a base .sip file within the participant's quality checking folder.
+    orders, pre-processes bone (if available), and saves within the participant's quality checking folder
 
     :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
     :param folder_location: (str) Directory location that the participant's individual folder is contained within
@@ -363,126 +363,120 @@ def generate_base_file(participant_id, folder_location):
     """
 
     # Establish participant's folder and location
-    participantFolder = f"{folder_location}FS6.0_sub-{str(participant_id)}_ses01\\"
+    participant_folder = f"{folder_location}FS6.0_sub-{str(participant_id)}_ses01\\"
 
-    ### Check for T1.raw:
+    # Check for T1.raw:
     # Participant's T1s usually exist within their base participant folder, but may exist in
     # potentially one of two formats:
     #   - FS6.0_sub-999999_ses01_T1_rs.RAW
     #   - T1.RAW
     # The following for loop will check if either of these versions exist in the participant's folder;
     # if one version exists, it will continue the following functions; if it is unable to find either version in the
-    # participant's folder, it will skip to the else clause at the end to display the dialogue window
+    # participant's folder, it not generate the file and will display a message indicate such.
 
-    ### Checking for T1.raw:
+    # Checking for T1.raw:
     # Preallocate T1 variable
-    T1 = None
+    t1 = None
     # Naming structure, option 1
-    t1Name1 = f"FS6.0_sub-{str(participant_id)}_ses01_T1_rs.RAW"
+    t1_name1 = f"FS6.0_sub-{str(participant_id)}_ses01_T1_rs.RAW"
     # Naming structure, option 2
-    t1Name2 = "T1.RAW"
+    t1_name2 = "T1.RAW"
     # List of T1 naming options (1 and 2)
-    t1Names = [t1Name1, t1Name2]
+    t1_names = [t1_name1, t1_name2]
 
-    ### Check the T1 naming structure
+    # Check the T1 naming structure
     # For each naming option...
-    for name in t1Names:
-        # Identify T1_path as the full pathway to the participant's folder combined with each naming version
-        T1_path = participantFolder + name
+    for name in t1_names:
+        # Identify t1_path as the full pathway to the participant's folder combined with each naming version
+        t1_path = participant_folder + name
         # If a version of the T1 exists in the participant's folder...
-        if os.path.exists(T1_path):
-            T1 = T1_path  # ... set T1 to be the T1 path location and...
+        if os.path.exists(t1_path):
+            t1 = t1_path  # ... set T1 to be the T1 path location and...
             break  # ... stop looking for a T1.
 
     # If the T1 was not locatable, display a dialogue box indicating such
-    if not T1:
+    if not t1:
         message_box("No RAW T1 scan found.")
 
-
-
-    ### If able to locate a T1 file:
+    # If able to locate a T1 file:
     else:
         # Load the T1 into a new sip file
-        sip.App.GetInstance().ImportRawImage(T1,
+        # Rename background image as <participant_id>_T1
+        sip.App.GetInstance().ImportRawImage(t1,
                                              sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
                                              sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
-                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,
-                                                                                                            256, 256,
-                                                                                                            256).SetPixelType(
-                                                 sip.Doc.Float32)
+                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,256, 256,256).SetPixelType(sip.Doc.Float32)
                                              )
-
-        # Rename background image as <participant_id>_T1
         sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(str(participant_id) + "_T1")
+
+        # IMPORTING PROCEDURES -----------------------------------------------------------------------------------------
 
         # Begin importing final tissue masks
         # Establish location for finalized masks from participant's folder
-        maskLocation = participantFolder + "Binarized_masks\\idv_mask\\"
+        mask_location = participant_folder + "Binarized_masks\\idv_mask\\"
         # List of masks to be imported
         masks = ["wm", "gm", "eyes", "csf", "air", "blood", "cancellous", "cortical", "skin", "fat", "muscle"]
 
-        ### For each mask in the list...
+        # For each mask in the list...
         for mask in masks:
             # ... Set the name as the particular mask...
-            maskName = mask
+            mask_name = mask
             # ... Import info, combining the mask name and import source location...
-            importInfo = maskLocation + maskName + ".raw"
+            import_info = mask_location + mask_name + ".raw"
 
             # ... Import tissue mask as background image...
             sip.App.GetInstance().GetActiveDocument().ImportBackgroundFromRawImage(
-                importInfo,
+                import_info,
                 sip.ImportOptions.UnsignedCharPixel, 256, 256, 256, 1, 1, 1, 0,
                 sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
                 sip.CommonImportConstraints().SetWindowLevel(0, 0).SetCrop(0, 0, 0, 256, 256, 256)
             )
             # ... Rename background image to mask's name...
-            sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(maskName)
+            sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(mask_name)
             # ... Copy background image into mask...
             sip.App.GetDocument().CopyBackgroundToMask()
             # ... Delete imported background image
-            sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(maskName))
+            sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(mask_name))
 
-        ### Colors and order
-        # Call the colorsOrderVisibility() function above
+        # Colors and order
         colors_order_visibility("Sam")
 
-        ### PRE-PROCESSING PROCEDURES   --------------------------------------------------------------------------------
-
         # Check if uniform is available
-        if os.path.exists(f"{participantFolder}Binarized_masks\\final\\uniform.raw"):
+        if os.path.exists(f"{participant_folder}Binarized_masks\\final\\uniform.raw"):
             # Indicator
             import_uniform = True
             # Est path as such
-            uniform_file = f"{participantFolder}Binarized_masks\\final\\"
+            uniform_file = f"{participant_folder}Binarized_masks\\final\\"
         # Else, if uniform exists within the bin_masks folder...
-        elif os.path.exists(f"{participantFolder}Binarized_masks\\uniform.raw"):
+        elif os.path.exists(f"{participant_folder}Binarized_masks\\uniform.raw"):
             # Indicator:
             import_uniform = True
             # Est path as such
-            uniform_file = f"{participantFolder}Binarized_masks\\"
+            uniform_file = f"{participant_folder}Binarized_masks\\"
         # Else, set the uniform_file path to "NONE", notify user later
         else:
             import_uniform = False
             uniform_file = "NONE"
-
         # If a uniform mask is available, import it
         if import_uniform:
             import_mask("uniform", uniform_file)
             sip.App.GetDocument().GetGenericMaskByName("uniform_old").SetName("uniform")
 
+        # BONE PRE-PROCESSING PROCEDURES   -----------------------------------------------------------------------------
+
         # Check for available bone:
         # If the bone exists within the bin_masks\final folder...
-        if os.path.exists(f"{participantFolder}Binarized_masks\\final\\bone.raw"):
+        if os.path.exists(f"{participant_folder}Binarized_masks\\final\\bone.raw"):
             # Indicator
             import_bone = True
             # Est path as such
-            bone_file = f"{participantFolder}Binarized_masks\\final\\"
+            bone_file = f"{participant_folder}Binarized_masks\\final\\"
         # Else, if bone exists within the bin_masks folder...
-        elif os.path.exists(f"{participantFolder}Binarized_masks\\bone.raw"):
+        elif os.path.exists(f"{participant_folder}Binarized_masks\\bone.raw"):
             # Indicator:
             import_bone = True
             # Est path as such
-            bone_file = f"{participantFolder}Binarized_masks\\"
+            bone_file = f"{participant_folder}Binarized_masks\\"
         # Else, set the bone_file path to "NONE", notify user later
         else:
             import_bone = False
@@ -497,6 +491,7 @@ def generate_base_file(participant_id, folder_location):
             # Perform bone patching
             bone_patching()
 
+            # If uniform was imported, reorganize masks with consideration to that
             if import_uniform:
                 # Organize additional bone + uniform masks
                 # Create a divider mask
@@ -535,9 +530,11 @@ def generate_base_file(participant_id, folder_location):
                 sip.App.GetDocument().GetGenericMaskByName("----").Activate()
                 sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetActiveGenericMask(), 16)
 
+        # FINALIZING ---------------------------------------------------------------------------------------------------
+
         # Save file as <999999>_base.sip to participant's quality checking folder
-        qcSave = f"{participantFolder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
-        sip.App.GetDocument().SaveAs(qcSave)
+        qc_save = f"{participant_folder}qualityCheck\\sipFiles\\{str(participant_id)}_base.sip"
+        sip.App.GetDocument().SaveAs(qc_save)
 
         # If the uniform mask and/or bone mask DNE, notify user:
         # If uniform AND bone both DNE:
