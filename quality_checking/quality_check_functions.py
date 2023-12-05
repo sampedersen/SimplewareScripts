@@ -678,3 +678,40 @@ def generate_eyes_int():
                                                                 sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
 
+
+def finalize_base_sip(subj_ID, folder_location, gen_can_cort, gen_eyes_int):
+    """
+
+    Perform intermediate functions and finalize 999999_base.sip; will generate canc/cort masks, interior eye masks,
+    reset colors/order of tissues, and save the file.
+
+    Args:
+        subj_ID: (int) Subject's 6 digit identifier
+        folder_location: (string) Path address to home directory for participant's folder
+        gen_can_cort: (Boolean) T/F indicate to perform intermediate step (generate cancellous/cortical)
+        gen_eyes_int: (Boolean) T/F indicate to perform intermediate step (generate eyes interior)
+
+    """
+
+    # Generate cancellous/cortical masks, if necessary
+    if gen_can_cort:
+        generate_canc_cort()
+
+    # Generate eyes interior, if necessary
+    if gen_eyes_int:
+        generate_eyes_int()
+
+    # Reset colors and order of mask
+    colors_order_visibility("Sam")
+
+    # Remove muscle mask
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("muscle"))
+
+    # Remove csf mask
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("csf"))
+
+    # Save the file as 999999_base.sip
+    participant_folder = f"FS6.0_sub-{str(subj_ID)}_ses01"
+    participant_path = f"{folder_location}\\{participant_folder}"
+    qc_save = f"{participant_path}\\qualityCheck\\sipFiles\\{str(subj_ID)}_base.sip"
+    sip.App.GetDocument().SaveAs(qc_save)
