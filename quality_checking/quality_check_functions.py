@@ -651,3 +651,24 @@ def generate_canc_cort():
                                                             sip.App.GetDocument().GetSliceIndices(
                                                                 sip.Doc.OrientationYZ),
                                                             sip.Doc.OrientationYZ)
+
+
+def generate_eyes_int():
+    """
+
+    Using the eyes mask, generate a mask of the interior of the eye. Used for subsequent addition to/removal from csf
+    and muscle masks, respectively.
+
+    """
+
+    # Regenerate eyes interior
+    sip.App.GetDocument().GetGenericMaskByName("eyes").Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of eyes").SetName("eyes interior")
+    sip.App.GetDocument().GetGenericMaskByName("eyes interior").Activate()
+    sip.App.GetDocument().ApplyCavityFillFilter()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"eyes interior\" MINUS eyes)",
+                                                            sip.App.GetDocument().GetMaskByName("eyes interior"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+
