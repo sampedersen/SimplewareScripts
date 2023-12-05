@@ -32,7 +32,8 @@ def message_box(msg):
 
     Function to display a message within a pop-up dialogue box.
 
-    :param msg: (str) Message to be displayed
+    Args:
+        msg: (str) Message to be displayed
 
     """
     # Display a dialogue box with a message
@@ -56,8 +57,9 @@ def colors_order_visibility(color_palette):
 
     Assigns tissues their respective colors and order of appearance within Simpleware.
 
-    :param color_palette: (str) Indicate which palette, Sam's or Aprinda's, which will be implemented when setting
-      tissue colors
+    Args:
+        color_palette: (str) Indicate which palette, Sam's or Aprinda's, which will be implemented when setting
+        tissue colors
 
     """
 
@@ -156,8 +158,9 @@ def import_mask(mask, location):
 
     Function to import participant's mask from specified location.
 
-    :param mask: (str) Mask intended to be imported
-    :param location: (str) Path to participant's individual folder.
+    Args:
+        mask: (str) Mask intended to be imported
+        location: (str) Path to participant's individual folder.
 
 
     """
@@ -357,8 +360,9 @@ def generate_base_file(participant_id, folder_location):
     Creates a new .sip file by loading in the participant's T1.RAW, imports tissue masks, sets the masks' colors and
     orders, pre-processes bone (if available), and saves within the participant's quality checking folder
 
-    :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
-    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+    Args:
+        participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
+        folder_location: (str) Directory location that the participant's individual folder is contained within
 
     """
 
@@ -405,7 +409,10 @@ def generate_base_file(participant_id, folder_location):
         sip.App.GetInstance().ImportRawImage(t1,
                                              sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
                                              sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
-                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,256, 256,256).SetPixelType(sip.Doc.Float32)
+                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,
+                                                                                                            256, 256,
+                                                                                                            256).SetPixelType(
+                                                 sip.Doc.Float32)
                                              )
         sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(str(participant_id) + "_T1")
 
@@ -548,6 +555,7 @@ def generate_base_file(participant_id, folder_location):
             message = f"{participant_id}_base.sip successfully generated. Uniform and pre-patched bone included."
         message_box(message)
 
+
 # Finalize the .sip file, save and export tissues
 def finalize_sip_file(participant_id, folder_location, check_stage):
     """
@@ -555,9 +563,10 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
     Standardizes the colors/order/visibility of the masks in the .sip file before removing intersecting overlap,
     binarizing and exporting the tissue masks to the quality check folder, and saving the .sip file.
 
-    :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
-    :param folder_location: (str) Directory location that the participant's individual folder is contained within
-    :param check_stage: (int) Should be either 1 or 2 to indicate if this is the end of quality check #1 or #2
+    Args:
+        participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
+        folder_location: (str) Directory location that the participant's individual folder is contained within
+        check_stage: (int) Should be either 1 or 2 to indicate if this is the end of quality check #1 or #2
 
     """
 
@@ -600,9 +609,10 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     Function to streamline the visual checking process by closing and saving the current file before generating and
     opening the next participant's base file.
 
-    :param current_participant: (int) Current participant's 6-digit identifier (ex, 999999)
-    :param next_participant: (int)  Next participant's 6-digit identifier (ex, 888888)
-    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+    Args:
+        current_participant: (int) Current participant's 6-digit identifier (ex, 999999)
+        next_participant: (int)  Next participant's 6-digit identifier (ex, 888888)
+        folder_location: (str) Directory location that the participant's individual folder is contained within
 
     """
 
@@ -616,3 +626,92 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     generate_base_file(next_participant, folder_location)
 
 
+def generate_canc_cort():
+    """
+
+    Function to automate the cancellous/cortical bone separation process. Requires user has a pre-existing "threshold"
+    mask with contrast information for initial separation. Deletes the pre-existing cancellous/cortical masks.
+
+    """
+
+    # Delete the cancellous and cortical masks
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("cancellous"))
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("cortical"))
+
+    # Generate the new cancellous as a copy of bone
+    sip.App.GetDocument().GetGenericMaskByName("bone").Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("cancellous")
+    sip.App.GetDocument().GetGenericMaskByName("cancellous").Activate()
+    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(cancellous AND threshold)",
+                                                            sip.App.GetDocument().GetMaskByName("cancellous"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+
+    # Generate the cortical mask by removing cancellous from bone
+    sip.App.GetDocument().GetGenericMaskByName("bone").Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("cortical")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"cortical\" MINUS cancellous)",
+                                                            sip.App.GetDocument().GetMaskByName("cortical"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+
+
+def generate_eyes_int():
+    """
+
+    Using the eyes mask, generate a mask of the interior of the eye. Used for subsequent addition to/removal from csf
+    and muscle masks, respectively.
+
+    """
+
+    # Regenerate eyes interior
+    sip.App.GetDocument().GetGenericMaskByName("eyes").Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of eyes").SetName("eyes interior")
+    sip.App.GetDocument().GetGenericMaskByName("eyes interior").Activate()
+    sip.App.GetDocument().ApplyCavityFillFilter()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"eyes interior\" MINUS eyes)",
+                                                            sip.App.GetDocument().GetMaskByName("eyes interior"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+
+
+def finalize_base_sip(subj_ID, folder_location, gen_can_cort, gen_eyes_int):
+    """
+
+    Perform intermediate functions and finalize 999999_base.sip; will generate canc/cort masks, interior eye masks,
+    reset colors/order of tissues, and save the file.
+
+    Args:
+        subj_ID: (int) Subject's 6 digit identifier
+        folder_location: (string) Path address to home directory for participant's folder
+        gen_can_cort: (Boolean) T/F indicate to perform intermediate step (generate cancellous/cortical)
+        gen_eyes_int: (Boolean) T/F indicate to perform intermediate step (generate eyes interior)
+
+    """
+
+    # Generate cancellous/cortical masks, if necessary
+    if gen_can_cort:
+        generate_canc_cort()
+
+    # Generate eyes interior, if necessary
+    if gen_eyes_int:
+        generate_eyes_int()
+
+    # Reset colors and order of mask
+    colors_order_visibility("Sam")
+
+    # Remove muscle mask
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("muscle"))
+
+    # Remove csf mask
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("csf"))
+
+    # Save the file as 999999_base.sip
+    participant_folder = f"FS6.0_sub-{str(subj_ID)}_ses01"
+    participant_path = f"{folder_location}\\{participant_folder}"
+    qc_save = f"{participant_path}\\qualityCheck\\sipFiles\\{str(subj_ID)}_base.sip"
+    sip.App.GetDocument().SaveAs(qc_save)
