@@ -715,3 +715,38 @@ def finalize_base_sip(subj_ID, folder_location, gen_can_cort, gen_eyes_int):
     participant_path = f"{folder_location}\\{participant_folder}"
     qc_save = f"{participant_path}\\qualityCheck\\sipFiles\\{str(subj_ID)}_base.sip"
     sip.App.GetDocument().SaveAs(qc_save)
+
+def qc2_importing(mask,subj_id,location):
+    """
+
+    Imports original idv_masks for QC2 pre-processing.
+
+    Args:
+        masks: (str) Name of the mask to be imported
+        subj_id: (int) Participant's 6-digit identifier
+        location: (str) Base directory the participant's folder is located in
+
+    """
+
+    participant_folder = f"FS6.0_sub-{str(subj_id)}_ses01\\"
+    participant_path = location+participant_folder
+    tissue_folder = f"{participant_path}Binarized_masks\\idv_mask\\"
+
+    mask_location = f"{tissue_folder}{mask}.raw"
+    # Import
+    sip.App.GetInstance().GetActiveDocument().ImportBackgroundFromRawImage(mask_location,
+                                                                           sip.ImportOptions.UnsignedCharPixel, 256,
+                                                                           256, 256, 1, 1, 1, 0,
+                                                                           sip.ImportOptions.BinaryFile,
+                                                                           sip.ImportOptions.LittleEndian,
+                                                                           sip.CommonImportConstraints().SetWindowLevel(
+                                                                               0, 0).SetCrop(0, 0, 0, 256, 256, 256)
+                                                                           )
+
+    # Rename background
+    sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"{mask}_idv")
+    # Copy background image to mask
+    sip.App.GetDocument().CopyBackgroundToMask()
+    # Delete imported background image
+    sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_idv"))
+
