@@ -32,7 +32,8 @@ def message_box(msg):
 
     Function to display a message within a pop-up dialogue box.
 
-    :param msg: (str) Message to be displayed
+    Args:
+        msg: (str) Message to be displayed
 
     """
     # Display a dialogue box with a message
@@ -56,8 +57,9 @@ def colors_order_visibility(color_palette):
 
     Assigns tissues their respective colors and order of appearance within Simpleware.
 
-    :param color_palette: (str) Indicate which palette, Sam's or Aprinda's, which will be implemented when setting
-      tissue colors
+    Args:
+        color_palette: (str) Indicate which palette, Sam's or Aprinda's, which will be implemented when setting
+        tissue colors
 
     """
 
@@ -156,8 +158,9 @@ def import_mask(mask, location):
 
     Function to import participant's mask from specified location.
 
-    :param mask: (str) Mask intended to be imported
-    :param location: (str) Path to participant's individual folder.
+    Args:
+        mask: (str) Mask intended to be imported
+        location: (str) Path to participant's individual folder.
 
 
     """
@@ -357,8 +360,9 @@ def generate_base_file(participant_id, folder_location):
     Creates a new .sip file by loading in the participant's T1.RAW, imports tissue masks, sets the masks' colors and
     orders, pre-processes bone (if available), and saves within the participant's quality checking folder
 
-    :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
-    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+    Args:
+        participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
+        folder_location: (str) Directory location that the participant's individual folder is contained within
 
     """
 
@@ -559,9 +563,10 @@ def finalize_sip_file(participant_id, folder_location, check_stage):
     Standardizes the colors/order/visibility of the masks in the .sip file before removing intersecting overlap,
     binarizing and exporting the tissue masks to the quality check folder, and saving the .sip file.
 
-    :param participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
-    :param folder_location: (str) Directory location that the participant's individual folder is contained within
-    :param check_stage: (int) Should be either 1 or 2 to indicate if this is the end of quality check #1 or #2
+    Args:
+        participant_id: (int) Participant's 6-digit identifying number (ie, 999999 or 103485)
+        folder_location: (str) Directory location that the participant's individual folder is contained within
+        check_stage: (int) Should be either 1 or 2 to indicate if this is the end of quality check #1 or #2
 
     """
 
@@ -604,9 +609,10 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     Function to streamline the visual checking process by closing and saving the current file before generating and
     opening the next participant's base file.
 
-    :param current_participant: (int) Current participant's 6-digit identifier (ex, 999999)
-    :param next_participant: (int)  Next participant's 6-digit identifier (ex, 888888)
-    :param folder_location: (str) Directory location that the participant's individual folder is contained within
+    Args:
+        current_participant: (int) Current participant's 6-digit identifier (ex, 999999)
+        next_participant: (int)  Next participant's 6-digit identifier (ex, 888888)
+        folder_location: (str) Directory location that the participant's individual folder is contained within
 
     """
 
