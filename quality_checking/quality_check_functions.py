@@ -405,7 +405,10 @@ def generate_base_file(participant_id, folder_location):
         sip.App.GetInstance().ImportRawImage(t1,
                                              sip.ImportOptions.DoublePixel, 256, 256, 256, 1.0, 1.0, 1.0, 0,
                                              sip.ImportOptions.BinaryFile, sip.ImportOptions.LittleEndian,
-                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,256, 256,256).SetPixelType(sip.Doc.Float32)
+                                             sip.CommonImportConstraints().SetWindowLevel(0.0, 0.0).SetCrop(0, 0, 0,
+                                                                                                            256, 256,
+                                                                                                            256).SetPixelType(
+                                                 sip.Doc.Float32)
                                              )
         sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(str(participant_id) + "_T1")
 
@@ -548,6 +551,7 @@ def generate_base_file(participant_id, folder_location):
             message = f"{participant_id}_base.sip successfully generated. Uniform and pre-patched bone included."
         message_box(message)
 
+
 # Finalize the .sip file, save and export tissues
 def finalize_sip_file(participant_id, folder_location, check_stage):
     """
@@ -616,3 +620,34 @@ def stop_start_visual_checks(current_participant, next_participant, folder_locat
     generate_base_file(next_participant, folder_location)
 
 
+def generate_canc_cort():
+    """
+
+    Function to automate the cancellous/cortical bone separation process. Requires user has a pre-existing "threshold"
+    mask with contrast information for initial separation. Deletes the pre-existing cancellous/cortical masks.
+
+    """
+
+    # Delete the cancellous and cortical masks
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("cancellous"))
+    sip.App.GetDocument().RemoveMask(sip.App.GetDocument().GetGenericMaskByName("cortical"))
+
+    # Generate the new cancellous as a copy of bone
+    sip.App.GetDocument().GetGenericMaskByName("bone").Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("cancellous")
+    sip.App.GetDocument().GetGenericMaskByName("cancellous").Activate()
+    sip.App.GetDocument().ApplyErodeFilter(sip.Doc.TargetMask, 1, 1, 1, 0)
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(cancellous AND threshold)",
+                                                            sip.App.GetDocument().GetMaskByName("cancellous"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+
+    # Generate the cortical mask by removing cancellous from bone
+    sip.App.GetDocument().GetGenericMaskByName("bone").Duplicate()
+    sip.App.GetDocument().GetGenericMaskByName("Copy of bone").SetName("cortical")
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"cortical\" MINUS cancellous)",
+                                                            sip.App.GetDocument().GetMaskByName("cortical"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
