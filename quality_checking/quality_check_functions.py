@@ -750,3 +750,48 @@ def qc2_importing(mask,subj_id,location):
     # Delete imported background image
     sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_idv"))
 
+def qc2_preproccessing(edited_mask):
+    """
+
+    Perform pre-processing steps for QC2 by subtracting original mask minus edited mask and edited mask minus original
+    mask.
+
+    Args:
+        edited_mask: (str) Mask to perform comparisons for
+
+    """
+    # Naming syntax for original version of mask
+    original_version = edited_mask + "_idv"
+    comparison_mask = "comparison"
+
+    # Operation: ORIGINAL minus EDITED
+    # Duplicate original version
+    sip.App.GetDocument().GetGenericMaskByName(original_version).Duplicate()
+    # Rename duplicate as comparison mask
+    sip.App.GetDocument().GetGenericMaskByName("Copy of " + original_version).SetName(comparison_mask)
+    # Perform boolean: original minus edited
+    boolean_setting = f"({comparison_mask} MINUS {edited_mask})"    # Note: comparison_mask is a duplicate of original
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression(boolean_setting,
+                                                            sip.App.GetDocument().GetMaskByName(comparison_mask),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+    # Rename comparison mask to reflect boolean relationship
+    rename = f"{original_version} - {edited_mask}"
+    sip.App.GetDocument().GetGenericMaskByName(comparison_mask).SetName(rename)
+
+    # Operation: EDITED minus ORIGINAL
+    # Duplicate edited version
+    sip.App.GetDocument().GetGenericMaskByName(edited_mask).Duplicate()
+    # Rename duplicate as comparison mask
+    sip.App.GetDocument().GetGenericMaskByName("Copy of " + edited_mask).SetName(comparison_mask)
+    # Perform boolean: edited minus original
+    boolean_setting = f"({comparison_mask} MINUS {original_version})"  # Note: comparison_mask is a duplicate of edited
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression(boolean_setting,
+                                                            sip.App.GetDocument().GetMaskByName(comparison_mask),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationYZ),
+                                                            sip.Doc.OrientationYZ)
+    # Rename comparison mask to reflect boolean relationship
+    rename = f"{edited_mask} - {original_version}"
+    sip.App.GetDocument().GetGenericMaskByName(comparison_mask).SetName(rename)
