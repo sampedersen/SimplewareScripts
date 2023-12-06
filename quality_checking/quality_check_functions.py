@@ -716,7 +716,8 @@ def finalize_base_sip(subj_ID, folder_location, gen_can_cort, gen_eyes_int):
     qc_save = f"{participant_path}\\qualityCheck\\sipFiles\\{str(subj_ID)}_base.sip"
     sip.App.GetDocument().SaveAs(qc_save)
 
-def qc2_importing(mask,subj_id,location):
+
+def qc2_importing(mask, subj_id, location):
     """
 
     Imports original idv_masks for QC2 pre-processing.
@@ -729,7 +730,7 @@ def qc2_importing(mask,subj_id,location):
     """
 
     participant_folder = f"FS6.0_sub-{str(subj_id)}_ses01\\"
-    participant_path = location+participant_folder
+    participant_path = location + participant_folder
     tissue_folder = f"{participant_path}Binarized_masks\\idv_mask\\"
 
     mask_location = f"{tissue_folder}{mask}.raw"
@@ -749,6 +750,7 @@ def qc2_importing(mask,subj_id,location):
     sip.App.GetDocument().CopyBackgroundToMask()
     # Delete imported background image
     sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_idv"))
+
 
 def qc2_preproccessing(edited_mask):
     """
@@ -770,7 +772,7 @@ def qc2_preproccessing(edited_mask):
     # Rename duplicate as comparison mask
     sip.App.GetDocument().GetGenericMaskByName("Copy of " + original_version).SetName(comparison_mask)
     # Perform boolean: original minus edited
-    boolean_setting = f"({comparison_mask} MINUS {edited_mask})"    # Note: comparison_mask is a duplicate of original
+    boolean_setting = f"({comparison_mask} MINUS {edited_mask})"  # Note: comparison_mask is a duplicate of original
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression(boolean_setting,
                                                             sip.App.GetDocument().GetMaskByName(comparison_mask),
                                                             sip.App.GetDocument().GetSliceIndices(
@@ -795,3 +797,19 @@ def qc2_preproccessing(edited_mask):
     # Rename comparison mask to reflect boolean relationship
     rename = f"{edited_mask} - {original_version}"
     sip.App.GetDocument().GetGenericMaskByName(comparison_mask).SetName(rename)
+
+
+def regen_bone():
+    """
+
+    Re-combine cancellous and cortical to depict an overall bone mask
+
+    """
+    # Duplicate cancellous and add cortical mask to it
+    sip.App.GetDocument().GetGenericMaskByName("cancellous_idv").Duplicate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"Copy of cancellous_idv\" OR cortical)",
+                                                            sip.App.GetDocument().GetMaskByName("Copy of cancellous_idv"),
+                                                            sip.App.GetDocument().GetSliceIndices(
+                                                                sip.Doc.OrientationXY),
+                                                            sip.Doc.OrientationXY)
+    sip.App.GetDocument().GetGenericMaskByName("Copy of cancellous_idv").SetName("bone_idv")
