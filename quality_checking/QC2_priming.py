@@ -56,7 +56,7 @@ module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simplew
 sys.path.append(module_path)
 
 # Import quality checking module
-import quality_check_functions as qc
+from lib.functions import quality_check_functions as qc
 import scanip_api3 as sip
 
 # Determine base directory location based on sublist

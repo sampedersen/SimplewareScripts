@@ -53,7 +53,7 @@ import sys
 module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
 sys.path.append(module_path)
 # Import quality checking module
-import quality_check_functions as qc
+from lib.functions import quality_check_functions as qc
 
 ########################################################################################################################
 

@@ -10,7 +10,6 @@ Date: 2023-08-02
 
 
 #! python3
-import scanip_api3 as sip
 import sys
 
 # Add module to path for importing
@@ -18,7 +17,7 @@ module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simplew
 sys.path.append(module_path)
 
 # Import quality checking module
-import quality_check_functions as qc
+from lib.functions import quality_check_functions as qc
 
 """
 ########################################################################################################################

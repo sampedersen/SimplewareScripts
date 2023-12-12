@@ -52,7 +52,7 @@ module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simplew
 sys.path.append(module_path)
 
 # Import quality checking module
-import quality_check_functions as qc
+from lib.functions import quality_check_functions as qc
 
 # Determine base directory location based on sublist
 base_dir = "P:\\WoodsLab\\ACT-head_models\\FEM\\manual_segmentation\\allParticipants\\"
