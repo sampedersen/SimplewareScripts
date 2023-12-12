@@ -73,7 +73,7 @@ else:
     qc.message_box("No directory found at the sublist specified. Please ensure that you entered either v1, v2, v3, "
                    "ET_old, or ET_new.")
     folder_location = "None"
-    exit()
+    sys.exit(1)
 
 masks = ["muscle","fat","skin","cortical","cancellous","blood","air","csf","eyes","gm","wm"]
 
