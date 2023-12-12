@@ -80,7 +80,7 @@ def colors_order_visibility(color_palette):
             "gm": (255, 128, 0),
             "muscle": (255, 64, 64),
             "skin": (0, 255, 255),
-            "wm": (255, 128, 192),
+            "wm": (255, 128, 192)
         }
 
     # If the user specifies for Sam's color palette, establish the color_dict with her values
@@ -808,8 +808,25 @@ def regen_bone():
     # Duplicate cancellous and add cortical mask to it
     sip.App.GetDocument().GetGenericMaskByName("cancellous_idv").Duplicate()
     sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"Copy of cancellous_idv\" OR cortical)",
-                                                            sip.App.GetDocument().GetMaskByName("Copy of cancellous_idv"),
+                                                            sip.App.GetDocument().GetMaskByName(
+                                                                "Copy of cancellous_idv"),
                                                             sip.App.GetDocument().GetSliceIndices(
                                                                 sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
     sip.App.GetDocument().GetGenericMaskByName("Copy of cancellous_idv").SetName("bone_idv")
+
+
+def create_mask(mask_name, mask_color):
+    """
+    Create a mask that will have the designated name and color
+    Args:
+        mask_name: (str) What the mask will be named; avoid conflicts with pre-existing masks
+        mask_color: (str) Color of the mask (optional); defaults to yellow
+
+    """
+    if mask_color == "black":
+        color_setting = sip.Colour(15, 0, 12)
+    else:
+        color_setting = sip.Colour(255, 255, 0)
+
+    sip.App.GetDocument().CreateMask(mask_name, color_setting)
