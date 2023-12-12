@@ -798,6 +798,14 @@ def qc2_preproccessing(edited_mask):
     rename = f"{edited_mask} - {original_version}"
     sip.App.GetDocument().GetGenericMaskByName(comparison_mask).SetName(rename)
 
+    if edited_mask == "bone":
+        sip.App.GetDocument().GetGenericMaskByName("bone - idv_bone").SetName("bone_comparison")
+        sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(bone_comparison MINUS air)",
+                                                                sip.App.GetDocument().GetMaskByName("bone_comparison"),
+                                                                sip.App.GetDocument().GetSliceIndices(
+                                                                    sip.Doc.OrientationXY), sip.Doc.OrientationXY)
+        sip.App.GetDocument().GetGenericMaskByName("bone_comparison").SetName("bone - idv_bone")
+
 
 def regen_bone():
     """
