@@ -745,11 +745,11 @@ def qc2_importing(mask, subj_id, location):
                                                                            )
 
     # Rename background
-    sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"{mask}_idv")
+    sip.App.GetDocument().GetBackgroundByName("Raw import [W:0.00 L:0.00]").SetName(f"idv_{mask}")
     # Copy background image to mask
     sip.App.GetDocument().CopyBackgroundToMask()
     # Delete imported background image
-    sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"{mask}_idv"))
+    sip.App.GetDocument().RemoveBackground(sip.App.GetDocument().GetBackgroundByName(f"idv_{mask}"))
 
 
 def qc2_preproccessing(edited_mask):
@@ -763,7 +763,7 @@ def qc2_preproccessing(edited_mask):
 
     """
     # Naming syntax for original version of mask
-    original_version = edited_mask + "_idv"
+    original_version = "idv_" + edited_mask
     comparison_mask = "comparison"
 
     # Operation: ORIGINAL minus EDITED
@@ -806,14 +806,14 @@ def regen_bone():
 
     """
     # Duplicate cancellous and add cortical mask to it
-    sip.App.GetDocument().GetGenericMaskByName("cancellous_idv").Duplicate()
-    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"Copy of cancellous_idv\" OR cortical)",
+    sip.App.GetDocument().GetGenericMaskByName("idv_cancellous").Duplicate()
+    sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(\"Copy of idv_cancellous\" OR cortical)",
                                                             sip.App.GetDocument().GetMaskByName(
-                                                                "Copy of cancellous_idv"),
+                                                                "Copy of idv_cancellous"),
                                                             sip.App.GetDocument().GetSliceIndices(
                                                                 sip.Doc.OrientationXY),
                                                             sip.Doc.OrientationXY)
-    sip.App.GetDocument().GetGenericMaskByName("Copy of cancellous_idv").SetName("bone_idv")
+    sip.App.GetDocument().GetGenericMaskByName("Copy of idv_cancellous").SetName("idv_bone")
 
 
 def create_mask(mask_name, mask_color):
