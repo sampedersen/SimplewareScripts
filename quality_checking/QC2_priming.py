@@ -86,6 +86,12 @@ qc.regen_bone()
 for edited_mask in edited_masks:
     qc.qc2_preproccessing(edited_mask)
 # Remove the air from the comparison mask bone (edited) minus bone (original)
-sip.App.GetDocument().GetGenericMaskByName("bone - bone_idv").SetName("bone_comparison")
+qc.qc2_preproccessing("bone")
+sip.App.GetDocument().GetGenericMaskByName("bone - idv_bone").SetName("bone_comparison")
 sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(bone_comparison MINUS air)", sip.App.GetDocument().GetMaskByName("bone_comparison"), sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY), sip.Doc.OrientationXY)
-sip.App.GetDocument().GetGenericMaskByName("bone_comparison").SetName("bone - bone_idv")
+sip.App.GetDocument().GetGenericMaskByName("bone_comparison").SetName("bone - idv_bone")
+
+# Save file as 999999_QC2.sip
+save_as = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\sipFiles\\{participant_id}_QC2_preprocess.sip"
+sip.App.GetDocument().SaveAs(save_as)
+
