@@ -921,7 +921,7 @@ def qc2_preproc_colors_order(tissues_to_compare):
     masks = ["wm", "gm", "eyes", "csf", "air", "blood", "bone", "cancellous", "cortical", "skin", "fat", "muscle"]
     idv_masks = ["idv_wm", "idv_gm", "idv_eyes", "idv_csf", "idv_air", "idv_blood", "idv_bone", "idv_cancellous",
                  "idv_cortical", "idv_skin", "idv_fat", "idv_muscle"]
-    additional_masks = ["uniform", "threshold", "eyes interior"]
+    additional_masks = ["uniform", "eyes interior"]
     section_masks = [
         "*******  idv masks *******",
         "*******  idv - QC  *******",
