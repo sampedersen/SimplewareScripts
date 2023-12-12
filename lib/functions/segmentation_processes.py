@@ -1,5 +1,5 @@
 """
-segmentation.py
+segmentation_processes.py
 
 Module for implementing segmentation-related functions
 
@@ -52,7 +52,7 @@ def verify_import():
 
     """
 
-    Verifies to user that segmentation.py module was successfully imported to Simpleware environment
+    Verifies to user that segmentation_processes.py module was successfully imported to Simpleware environment
 
     Args:
         None

@@ -29,7 +29,7 @@ module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\quality_checking\\"
 sys.path.append(module_path)
 
 # Import the custom module for segmentation
-from lib.functions.segmentation import segmentation as seg
+from lib.functions.segmentation_processes import segmentation as seg
 
 # Perform (re)generation:
 seg.generate_csf_10(firstGen)
