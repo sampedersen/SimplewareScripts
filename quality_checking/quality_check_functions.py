@@ -723,7 +723,7 @@ def qc2_importing(mask, subj_id, location):
     Imports original idv_masks for QC2 pre-processing.
 
     Args:
-        masks: (str) Name of the mask to be imported
+        mask: (str) Name of the mask to be imported
         subj_id: (int) Participant's 6-digit identifier
         location: (str) Base directory the participant's folder is located in
 
@@ -841,3 +841,141 @@ def move_to_bottom(mask_name):
     """
     sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetGenericMaskByName(mask_name), 1)
 
+
+def qc2_preproc_colors_order(tissues_to_compare):
+    """
+    Move the masks according to QC2 final order and reset colors.
+    Args:
+        tissues_to_compare: (list; str) List of tissues that need comparison masks.
+
+    Returns:
+
+    """
+
+    # Dictionaries with color information per each set of masks
+    # QC mask colors
+    qc_colors = {
+        "air": (0, 128, 0),
+        "blood": (0, 0, 255),
+        "bone": (0, 111, 255),
+        "cancellous": (255, 0, 255),
+        "cortical": (0, 255, 0),
+        "csf": (128, 0, 255),
+        "eyes": (0, 128, 255),
+        "fat": (246, 240, 202),
+        "gm": (255, 128, 0),
+        "muscle": (255, 64, 64),
+        "skin": (0, 255, 255),
+        "wm": (255, 128, 192)
+    }
+
+    # idv mask colors
+    idv_colors = {
+        "idv_air": (0, 89, 0),
+        "idv_blood": (0, 0, 178),
+        "idv_bone": (0, 111, 255),
+        "idv_cancellous": (178, 0, 178),
+        "idv_cortical": (0, 178, 0),
+        "idv_csf": (89, 0, 178),
+        "idv_eyes": (0, 89, 178),
+        "idv_fat": (172, 168, 141),
+        "idv_gm": (178, 89, 0),
+        "idv_muscle": (178, 44, 44),
+        "idv_skin": (0, 178, 178),
+        "idv_wm": (178, 89, 134)
+    }
+
+    # idv - qc colors
+    comparison_A_colors = {
+        "idv_air - air": (50, 178, 50),
+        "idv_blood - blood": (50, 50, 255),
+        "idv_bone - bone": (0, 111, 255),
+        "idv_cancellous - cancellous": (255, 50, 255),
+        "idv_cortical - cortical": (50, 255, 50),
+        "idv_csf - csf": (178, 50, 255),
+        "idv_eyes - eyes": (50, 178, 255),
+        "idv_fat - fat": (255, 255, 252),
+        "idv_gm - gm": (255, 178, 50),
+        "idv_muscle - muscle": (255, 114, 114),
+        "idv_skin - skin": (50, 255, 255),
+        "idv_wm - wm": (255, 178, 242)
+    }
+
+    # qc - idv colors
+    comparison_B_colors = {
+        "air - idv_air": (0, 78, 0),
+        "blood - idv_blood": (0, 0, 205),
+        "bone - idv_bone": (0, 111, 255),
+        "cancellous - idv_cancellous": (205, 0, 205),
+        "cortical - idv_cortical": (0, 205, 0),
+        "csf - idv_csf": (78, 0, 205),
+        "eyes - idv_eyes": (0, 78, 205),
+        "fat - idv_fat": (196, 190, 152),
+        "gm - idv_gm": (205, 78, 0),
+        "muscle - idv_muscle": (205, 14, 14),
+        "skin - idv_skin": (0, 205, 205),
+        "wm - idv_wm": (205, 78, 142)
+    }
+
+    # Permanent - mask names
+    masks = ["wm", "gm", "eyes", "csf", "air", "blood", "bone", "cancellous", "cortical", "skin", "fat", "muscle"]
+    idv_masks = ["idv_wm", "idv_gm", "idv_eyes", "idv_csf", "idv_air", "idv_blood", "idv_bone", "idv_cancellous",
+                 "idv_cortical", "idv_skin", "idv_fat", "idv_muscle"]
+    additional_masks = ["uniform", "threshold", "eyes interior"]
+    section_masks = [
+        "*******  idv masks *******",
+        "*******  idv - QC  *******",
+        "*******  QC - idv  *******",
+        "*******  QC masks  *******",
+        "*******   Addtnl   *******"]
+
+    # Generate list of comparisons needed
+    comp_a = []
+    comp_b = []
+    for comparison in tissues_to_compare:
+        comparison_a = f"idv_{comparison} - {comparison}"
+        comparison_b = f"{comparison} - idv_{comparison}"
+        comp_a.append(comparison_a)
+        comp_b.append(comparison_b)
+
+    # Move additional masks to the bottom
+    create_mask(section_masks[4], "black")
+    move_to_bottom(section_masks[4])
+    for additional in additional_masks:
+        move_to_bottom(additional)
+
+    # Move idv masks and change colors
+    create_mask(section_masks[0], "black")
+    move_to_bottom(section_masks[0])
+    for idv_mask in idv_masks:
+        move_to_bottom(idv_mask)
+        # Change color
+        color = idv_colors[idv_mask]
+        sip.App.GetDocument().GetGenericMaskByName(idv_mask).SetColour(sip.Colour(*color))
+
+    # Move comparison A masks and change colors
+    create_mask(section_masks[1], "black")
+    move_to_bottom(section_masks[1])
+    for comparison_mask in comp_a:
+        move_to_bottom(comparison_mask)
+        # Change color
+        color = comparison_A_colors[comparison_mask]
+        sip.App.GetDocument().GetGenericMaskByName(comparison_mask).SetColour(sip.Colour(*color))
+
+    # Move comparison B masks and change colors
+    create_mask(section_masks[2], "black")
+    move_to_bottom(section_masks[2])
+    for comparison_mask in comp_b:
+        move_to_bottom(comparison_mask)
+        # Change color
+        color = comparison_B_colors[comparison_mask]
+        sip.App.GetDocument().GetGenericMaskByName(comparison_mask).SetColour(sip.Colour(*color))
+
+    # Move the QC masks and change colors
+    create_mask(section_masks[3], "black")
+    move_to_bottom(section_masks[3])
+    for mask in masks:
+        move_to_bottom(mask)
+        # Change color
+        color = qc_colors[mask]
+        sip.App.GetDocument().GetGenericMaskByName(mask).SetColour(sip.Colour(*color))
