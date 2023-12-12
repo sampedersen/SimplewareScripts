@@ -10,7 +10,9 @@ Date: 2023-12-06
 ########################################################################################################################
 
 Notes for use:
-    -
+    - This script will re-import the idv_masks and generate comparison masks before saving the file
+    - Specify the participant's 6-digit ID
+    - Also specify which of the masks were edited and require further comparisons
 
 Variables:
     - Examples below
@@ -50,7 +52,7 @@ edited_masks = [
 import sys
 
 # Add module to path for importing
-module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\SimplewareScripts\\quality_checking\\"
+module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
 sys.path.append(module_path)
 
 # Import quality checking module
@@ -78,7 +80,7 @@ else:
 masks = ["muscle","fat","skin","cortical","cancellous","blood","air","csf","eyes","gm","wm"]
 
 # Save file as 999999_QC2.sip
-save_as = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\sipFiles\\{participant_id}_QC2_preprocess_TESTING.sip"
+save_as = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\sipFiles\\{participant_id}_QC2_preprocess.sip"
 sip.App.GetDocument().SaveAs(save_as)
 
 # Import original idv masks
