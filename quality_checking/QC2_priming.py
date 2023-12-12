@@ -31,6 +31,7 @@ edited_masks = [
     "muscle",
     "fat",
     "skin",
+    "bone"
     "cortical",
     "cancellous",
     "blood",
@@ -40,8 +41,7 @@ edited_masks = [
     "gm",
     "wm"
 ]
-# edited_masks = ["muscle","cancellous","cortical"      # Example
-
+# edited_masks = ["muscle","cancellous","cortical"]      # Example
 ########################################################################################################################
 # Execute the script
 # Please do not edit beyond this point (or do so at your own risk)
@@ -50,7 +50,7 @@ edited_masks = [
 import sys
 
 # Add module to path for importing
-module_path = "P:\\WoodsLab\\ACT-head_models\\FEM\\Sam\\Scripts\\Python\\Simpleware\\quality_checking\\"
+module_path = "C:\\Users\\samanthapedersen\\PycharmProjects\\SimplewareScripts\\quality_checking\\"
 sys.path.append(module_path)
 
 # Import quality checking module
@@ -78,7 +78,7 @@ else:
 masks = ["muscle","fat","skin","cortical","cancellous","blood","air","csf","eyes","gm","wm"]
 
 # Save file as 999999_QC2.sip
-save_as = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\sipFiles\\{participant_id}_QC2_preprocess.sip"
+save_as = f"{folder_location}FS6.0_sub-{participant_id}_ses01\\qualityCheck\\sipFiles\\{participant_id}_QC2_preprocess_TESTING.sip"
 sip.App.GetDocument().SaveAs(save_as)
 
 # Import original idv masks
@@ -89,11 +89,6 @@ qc.regen_bone()
 # Perform Boolean operations to produce comparison masks
 for edited_mask in edited_masks:
     qc.qc2_preproccessing(edited_mask)
-# Remove the air from the comparison mask bone (edited) minus bone (original)
-qc.qc2_preproccessing("bone")
-sip.App.GetDocument().GetGenericMaskByName("bone - idv_bone").SetName("bone_comparison")
-sip.App.GetDocument().ReplaceMaskUsingBooleanExpression("(bone_comparison MINUS air)", sip.App.GetDocument().GetMaskByName("bone_comparison"), sip.App.GetDocument().GetSliceIndices(sip.Doc.OrientationXY), sip.Doc.OrientationXY)
-sip.App.GetDocument().GetGenericMaskByName("bone_comparison").SetName("bone - idv_bone")
-
+# Move and set colors
 qc.qc2_preproc_colors_order(edited_masks)
 
