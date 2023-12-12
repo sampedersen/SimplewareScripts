@@ -830,3 +830,14 @@ def create_mask(mask_name, mask_color):
         color_setting = sip.Colour(255, 255, 0)
 
     sip.App.GetDocument().CreateMask(mask_name, color_setting)
+
+
+def move_to_bottom(mask_name):
+    """
+    Move the specified mask to the bottom of the data set
+    Args:
+        mask_name: (str) Mask to be moved
+
+    """
+    sip.App.GetDocument().MoveMaskTo(sip.App.GetDocument().GetGenericMaskByName(mask_name), 1)
+
