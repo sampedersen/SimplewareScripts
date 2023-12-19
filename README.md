@@ -10,7 +10,7 @@ Welcome to my repository for deploying scripts within Synopsis Simpleware softwa
 4. [Usage](#usage)
 
 
-## Introduction {#introduction}
+## Introduction (#introduction)
 
 ## Prerequisites {#prereqs}
 
@@ -18,11 +18,7 @@ Welcome to my repository for deploying scripts within Synopsis Simpleware softwa
 
 ## Usage {#usage}
 
-- 
-- [Installation & Use](#installation) 
-- [Quality Checks](#quality-checks)
-  - [List of Scripts](#list-of-scripts)
-- [Segmentation](#segmentation)
+
 
 
 
