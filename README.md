@@ -5,14 +5,14 @@ Welcome to my repository for deploying scripts within Synopsis Simpleware softwa
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Prerequisites](#prereqs)
+2. [Prerequisites](#prerequisites)
 3. [Installation](#install)
 4. [Usage](#usage)
 
 
-## Introduction (#introduction)
+## Introduction
 
-## Prerequisites {#prereqs}
+## Prerequisites
 
 ## Installation {#install}
 
