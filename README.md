@@ -1,22 +1,35 @@
-# Synopsis Simpleware Scripts
-Welcome to my repository for deploying scripts within Synopsis Simpleware software. This collection of scripts is designed to streamline the deployment process for segmenting T1-weighted magnetic resonance imaging (MRI) head scancs. 
-
+# Synopsis Simpleware Deployment Scripts
+Welcome to my repository for deploying scripts within Synopsis Simpleware software. This collection of scripts is designed to streamline the deployment process for segmenting T1-weighted magnetic resonance imaging (MRI) head scans. 
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
-3. [Installation](#install)
+3. [Installation](#installation)
 4. [Usage](#usage)
 
 
 ## Introduction
+This repository contains a set of deployment scripts for segmenting T1-weighted MRI head scans using Synopsis Simpleware. These scripts automate several aspects of segmentation within the Synopsis Simpleware environment, such as file and data organization and processing. 
 
 ## Prerequisites
+Before using these scripts, please ensure you are using the following version of Synopsis Simpleware:
+* [Synopsis Simpleware](#https://www.synopsys.com/simpleware.html) version O-2018.12-SP2
+* Scripts may work in the 2020 version but have not been fully troubleshooted. 
 
-## Installation {#install}
+## Installation 
+To install the deployment script, follow these steps: 
 
-## Usage {#usage}
+1. Clone this repository to your local machine:
+```bash
+git clone https://github.com/sampedersen/SimplewareScripts.git
+``` 
+
+## Usage 
+Follow these steps to deploy the scripts:
+
+## Configuration
+Customize the deployment process by modifying the configuration files. These can be found in the `config` directory. 
 
 
 
