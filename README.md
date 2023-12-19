@@ -1,11 +1,24 @@
-# Simpleware Scripts
-This repository contains modules and scripts intended to be implemented within Synopsys Simpleware's scripting 
-environment. Presently, these scripts are not intended to be executed outside the Simpleware scripting environment or 
-directly within alternative IDEs. 
+# Synopsis Simpleware Scripts
+Welcome to my repository for deploying scripts within Synopsis Simpleware software. This collection of scripts is designed to streamline the deployment process for segmenting T1-weighted magnetic resonance imaging (MRI) head scancs. 
 
 
 ## Table of Contents
 
+1. [Introduction](#introduction)
+2. [Prerequisites](#prereqs)
+3. [Installation](#install)
+4. [Usage](#usage)
+
+
+## Introduction {#introduction}
+
+## Prerequisites {#prereqs}
+
+## Installation {#install}
+
+## Usage {#usage}
+
+- 
 - [Installation & Use](#installation) 
 - [Quality Checks](#quality-checks)
   - [List of Scripts](#list-of-scripts)
